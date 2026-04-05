@@ -1,18 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
-import type {
-  ComponentType,
-  SVGProps,
-  TransitionEvent,
-} from 'react'
+import { useCallback, useEffect, useId, useState } from 'react'
+import type { ComponentType, SVGProps } from 'react'
 import * as ReactQRCode from 'react-qr-code'
 import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
+import { useAnimatedModal } from '../useAnimatedModal'
 import './StartRoomModal.css'
 
 /** Named runtime export; default import is a broken nested object under Vite ESM/CJS interop. */
@@ -32,37 +22,14 @@ type StartRoomModalProps = {
 
 export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
   const titleId = useId()
-  const panelRef = useRef<HTMLDivElement>(null)
-  const openRef = useRef(open)
   const [copied, setCopied] = useState(false)
-  const [shouldMount, setShouldMount] = useState(open)
-  const [motionOpen, setMotionOpen] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
+  const { shouldMount, rootClass, panelRef, onPanelTransitionEnd } =
+    useAnimatedModal(open, reducedMotion, {
+      rootClassExtra: 'modal-root--layer-above',
+    })
 
   const roomUrl = `${window.location.origin}/`
-
-  useEffect(() => {
-    openRef.current = open
-  }, [open])
-
-  useLayoutEffect(() => {
-    /* Drive mount + motion classes from `open` so exit transitions can finish before unmount. */
-    /* eslint-disable react-hooks/set-state-in-effect -- intentional animation orchestration */
-    if (open) {
-      setShouldMount(true)
-      const id = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setMotionOpen(true))
-      })
-      return () => cancelAnimationFrame(id)
-    }
-    setMotionOpen(false)
-    if (reducedMotion) {
-      queueMicrotask(() => {
-        if (!openRef.current) setShouldMount(false)
-      })
-    }
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [open, reducedMotion])
 
   const handleClose = useCallback(() => {
     setCopied(false)
@@ -90,29 +57,7 @@ export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [open, handleClose])
 
-  useEffect(() => {
-    if (!motionOpen) return
-    panelRef.current?.focus()
-  }, [motionOpen])
-
-  const onPanelTransitionEnd = useCallback(
-    (e: TransitionEvent<HTMLDivElement>) => {
-      if (e.target !== e.currentTarget) return
-      if (openRef.current) return
-      setShouldMount(false)
-    },
-    [],
-  )
-
   if (!shouldMount) return null
-
-  const rootClass = [
-    'modal-root',
-    motionOpen && 'modal-root--open',
-    reducedMotion && 'modal-root--reduced-motion',
-  ]
-    .filter(Boolean)
-    .join(' ')
 
   return (
     <div className={rootClass}>

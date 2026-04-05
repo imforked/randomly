@@ -147,6 +147,19 @@
   background: var(--color-control-fill-hover);
 }
 
+a.btn {
+  text-decoration: none;
+}
+
+a.btn:hover {
+  color: var(--color-control-label);
+  text-decoration: none;
+}
+
+a.btn.btn-secondary:hover {
+  color: var(--color-fg);
+}
+
 .btn.btn-secondary {
   color: var(--color-fg);
   background: transparent;

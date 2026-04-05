@@ -61,6 +61,8 @@ export type FlippingTextProps = {
   /** Root element — use `h1` / `h2` / `h3` + `guide-prompt` for guidance prompts */
   as?: FlippingTextTag
   className?: string
+  /** Optional id for `aria-labelledby` / labels */
+  id?: string
 }
 
 /**
@@ -71,11 +73,12 @@ export function FlippingText({
   text,
   as: Tag = 'span',
   className,
+  id,
 }: FlippingTextProps) {
   const reducedMotion = usePrefersReducedMotion()
 
   if (reducedMotion) {
-    return createElement(Tag, { className }, text)
+    return createElement(Tag, { className, id }, text)
   }
 
   const letters = [...text]
@@ -84,19 +87,29 @@ export function FlippingText({
     Tag,
     {
       className: ['flipping-text', className].filter(Boolean).join(' '),
+      id,
     },
     <>
       <span className="sr-only">{text}</span>
       <span className="flip-title" aria-hidden="true">
-        {letters.map((ch, i) => (
-          <FlipGlyph
-            key={`${i}-${ch}`}
-            lower={ch.toLowerCase()}
-            upper={ch.toUpperCase()}
-            delay={flipDelayForIndex(i)}
-            duration={flipDurationForIndex(i)}
-          />
-        ))}
+        {letters.map((ch, i) => {
+          if (ch === ' ') {
+            return (
+              <span key={`${i}-space`} className="flip-space">
+                {'\u00A0'}
+              </span>
+            )
+          }
+          return (
+            <FlipGlyph
+              key={`${i}-${ch}`}
+              lower={ch.toLowerCase()}
+              upper={ch.toUpperCase()}
+              delay={flipDelayForIndex(i)}
+              duration={flipDurationForIndex(i)}
+            />
+          )
+        })}
       </span>
     </>,
   )

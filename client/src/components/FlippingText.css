@@ -1,5 +1,15 @@
 .flip-title {
   display: inline;
+  white-space: pre;
+}
+
+/*
+ * Regular spaces as FlipGlyph collapse to no width (inline-block + flipping faces).
+ * One NBSP per source space keeps phrase boundaries visible.
+ */
+.flip-space {
+  display: inline-block;
+  vertical-align: baseline;
 }
 
 .flip-letter {
