@@ -1,0 +1,70 @@
+/**
+ * Design tokens — mobile-first, system typography.
+ */
+
+:root {
+  --color-fg: #1d1d1f;
+  --color-fg-secondary: #6e6e73;
+  --color-fg-tertiary: #86868b;
+  --color-bg: #ffffff;
+  --color-surface: #f5f5f7;
+  --color-border: #d2d2d7;
+  --color-border-faint: rgba(0, 0, 0, 0.08);
+
+  --color-accent: #0066cc;
+  --color-accent-hover: #004499;
+  --color-focus-ring: rgba(0, 102, 204, 0.45);
+
+  /* Primary control fill — neutral, not accent */
+  --color-control-fill: #1d1d1f;
+  --color-control-fill-hover: #2d2d2f;
+  --color-control-label: #ffffff;
+
+  --font-sans: system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+
+  --text-body: 17px;
+  --text-body-lg: 19px;
+  --text-lead: 21px;
+  --text-caption: 12px;
+  --leading-tight: 1.05;
+  --leading-snug: 1.15;
+  --leading-body: 1.47059;
+  --tracking-display: -0.022em;
+  --tracking-body: -0.022em;
+
+  --guide-prompt-size: 55px;
+
+  --space-gutter: max(1.25rem, env(safe-area-inset-left, 0px));
+  --space-gutter-inline: max(1.25rem, env(safe-area-inset-right, 0px));
+  --space-safe-top: env(safe-area-inset-top, 0px);
+  --space-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Cap width on large viewports (mobile-first; desktop is preview-only) */
+  --layout-max-width: 480px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fg: #f5f5f7;
+    --color-fg-secondary: #a1a1a6;
+    --color-fg-tertiary: #86868b;
+    --color-bg: #000000;
+    --color-surface: #1d1d1f;
+    --color-border: #424245;
+    --color-border-faint: rgba(255, 255, 255, 0.12);
+    --color-accent: #2997ff;
+    --color-accent-hover: #5eb0ff;
+    --color-focus-ring: rgba(41, 151, 255, 0.45);
+    --color-control-fill: #f5f5f7;
+    --color-control-fill-hover: #e4e4e9;
+    --color-control-label: #000000;
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.45);
+  }
+}
