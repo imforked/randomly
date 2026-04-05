@@ -21,7 +21,7 @@ function App() {
           className="btn"
           onClick={() => setRoomModalOpen(true)}
         >
-          Start a Room
+          Create a Room
         </button>
       </div>
       <StartRoomModal
