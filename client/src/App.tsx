@@ -13,7 +13,7 @@ function App() {
           <p className="subhead">By @100.11101</p>
         </header>
         <button type="button" className="btn">
-          Start a room
+          Start a Room
         </button>
       </div>
     </main>
