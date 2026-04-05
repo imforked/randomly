@@ -1,0 +1,91 @@
+.flip-title {
+  display: inline;
+}
+
+.flip-letter {
+  display: inline-block;
+  perspective: 420px;
+  margin-inline: 0.015em;
+}
+
+.flip-letter__inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform-style: preserve-3d;
+  line-height: 1;
+  animation: flipLetter var(--flip-duration, 5.8s) ease-in-out
+    var(--flip-delay, 1s) infinite;
+}
+
+.flip-letter__face {
+  display: inline-block;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/*
+  Uppercase: slightly smaller + letter-spacing 0 for width.
+  Flex-center sat too high vs neighbors’ x-height band; padding-top nudges the
+  glyph down inside the cell without going back to absolute top:0.
+*/
+.flip-letter__face--upper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: 0.09em;
+  font-size: 0.88em;
+  letter-spacing: 0;
+  line-height: 1;
+  transform: rotateX(180deg);
+}
+
+/*
+  Long “at rest” pause sits at the END of the loop, not the start — otherwise
+  animation-delay plus a long 0° lead-in felt like ~3s+ before any motion.
+  Flow: flip up → hold upper → flip down → long rest (lower) → repeat.
+*/
+@keyframes flipLetter {
+  0% {
+    transform: rotateX(0deg);
+  }
+  10%,
+  24% {
+    transform: rotateX(180deg);
+  }
+  34%,
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.flipping-text .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.flipping-text {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-letter__inner {
+    animation: none;
+    transform: none;
+  }
+
+  .flip-letter__face--upper {
+    display: none;
+  }
+}

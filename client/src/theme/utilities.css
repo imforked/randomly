@@ -10,6 +10,15 @@
   padding-bottom: max(1.5rem, var(--space-safe-bottom));
 }
 
+.shell.shell-landing {
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 .stack {
   display: flex;
   flex-direction: column;
