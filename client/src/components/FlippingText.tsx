@@ -1,26 +1,50 @@
-import { createElement, type CSSProperties } from 'react'
+import {
+  createElement,
+  useId,
+  useMemo,
+  type CSSProperties,
+} from 'react'
 import './FlippingText.css'
 import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
 
-/** Seconds past 1s — irregular, cycled so delays don’t read as a ripple */
-const DELAY_OFFSETS = [
-  0, 0.01, 1.78, 3.62, 0.54, 2.89, 1.11, 2.46, 0.73, 2.02, 1.33, 3.1, 0.19,
-  2.5, 1.67, 2.21,
-] as const
-
-const DURATION_SECONDS = [
-  5.47, 6.13, 5.21, 6.02, 5.74, 6.31, 5.06, 5.89, 5.55, 6.0, 5.35, 6.2,
-] as const
-
-function flipDelayForIndex(i: number): string {
-  const offset = DELAY_OFFSETS[i % DELAY_OFFSETS.length] ?? 0
-  const layer = Math.floor(i / DELAY_OFFSETS.length) * 0.08
-  return `${(1 + offset + layer).toFixed(2)}s`
+/** Stable 32-bit hash for seeding (per-instance id + letter index). */
+function hashSeed(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) {
+    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
+  }
+  return h >>> 0
 }
 
-function flipDurationForIndex(i: number): string {
-  const d = DURATION_SECONDS[i % DURATION_SECONDS.length] ?? 5.8
-  return `${d.toFixed(2)}s`
+/** Deterministic [0, 1) from seed — each FlippingText instance diverges via `useId`. */
+function mulberry32(seed: number): () => number {
+  return () => {
+    let t = (seed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const DELAY_OFFSET_MAX = 3.62
+const DURATION_MIN = 5.06
+const DURATION_MAX = 6.31
+const LAYER_STRIDE = 16
+const LAYER_STEP = 0.08
+
+function flipTimingForLetter(instanceKey: string, index: number): {
+  delay: string
+  duration: string
+} {
+  const rng = mulberry32(hashSeed(`${instanceKey}:${index}`))
+  const delayOffset = rng() * DELAY_OFFSET_MAX
+  const layer = Math.floor(index / LAYER_STRIDE) * LAYER_STEP
+  const delay = `${(1 + delayOffset + layer).toFixed(2)}s`
+  const duration = `${(
+    DURATION_MIN +
+    rng() * (DURATION_MAX - DURATION_MIN)
+  ).toFixed(2)}s`
+  return { delay, duration }
 }
 
 type FlipGlyphProps = {
@@ -76,6 +100,15 @@ export function FlippingText({
   id,
 }: FlippingTextProps) {
   const reducedMotion = usePrefersReducedMotion()
+  const instanceKey = useId()
+
+  const timings = useMemo(
+    () =>
+      [...text].map((ch, i) =>
+        ch === ' ' ? null : flipTimingForLetter(instanceKey, i),
+      ),
+    [text, instanceKey],
+  )
 
   if (reducedMotion) {
     return createElement(Tag, { className, id }, text)
@@ -100,13 +133,14 @@ export function FlippingText({
               </span>
             )
           }
+          const { delay, duration } = timings[i]!
           return (
             <FlipGlyph
               key={`${i}-${ch}`}
               lower={ch.toLowerCase()}
               upper={ch.toUpperCase()}
-              delay={flipDelayForIndex(i)}
-              duration={flipDurationForIndex(i)}
+              delay={delay}
+              duration={duration}
             />
           )
         })}
