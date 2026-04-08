@@ -12,7 +12,7 @@ import {
 import './FlippingText.css'
 import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
 
-const GAP_MS = 2000
+const GAP_MS = 2500
 const FIRST_FLIP_DELAY_MS = 1000
 
 type CharPos = { lineIndex: number; charIndex: number }
