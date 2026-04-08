@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useId, useState } from 'react'
 import type { ComponentType, SVGProps } from 'react'
 import * as ReactQRCode from 'react-qr-code'
+import {
+  FlippingLetterPoolProvider,
+  PooledFlippingTitle,
+} from './FlippingLetterPool'
 import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
 import { useAnimatedModal } from '../useAnimatedModal'
 import './StartRoomModal.css'
+
+const SHARE_ROOM_FLIP_LINES = ['Share the Room'] as const
 
 /** Named runtime export; default import is a broken nested object under Vite ESM/CJS interop. */
 type QRCodeProps = SVGProps<SVGSVGElement> & {
@@ -76,29 +82,35 @@ export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
         tabIndex={-1}
         onTransitionEnd={onPanelTransitionEnd}
       >
-        <h2 id={titleId} className="modal-title">
-          Share the Room
-        </h2>
-        <div className="modal-qr-wrap">
-          <QRCode
-            value={roomUrl}
-            size={256}
-            className="modal-qr-code"
-            level="M"
+        <FlippingLetterPoolProvider lines={SHARE_ROOM_FLIP_LINES}>
+          <PooledFlippingTitle
+            lineIndex={0}
+            id={titleId}
+            as="h2"
+            text={SHARE_ROOM_FLIP_LINES[0]}
+            className="modal-title"
           />
-        </div>
-        <div className="modal-action-group">
-          <button
-            type="button"
-            className="btn btn-secondary modal-copy-btn"
-            onClick={copyLink}
-          >
-            {copied ? 'Copied' : 'Copy Link'}
-          </button>
-          <a href={roomUrl} className="btn btn-secondary modal-go-room-btn">
-            Go to Room
-          </a>
-        </div>
+          <div className="modal-qr-wrap">
+            <QRCode
+              value={roomUrl}
+              size={256}
+              className="modal-qr-code"
+              level="M"
+            />
+          </div>
+          <div className="modal-action-group">
+            <button
+              type="button"
+              className="btn btn-secondary modal-copy-btn"
+              onClick={copyLink}
+            >
+              {copied ? 'Copied' : 'Copy Link'}
+            </button>
+            <a href={roomUrl} className="btn btn-secondary modal-go-room-btn">
+              Go to Room
+            </a>
+          </div>
+        </FlippingLetterPoolProvider>
       </div>
     </div>
   )

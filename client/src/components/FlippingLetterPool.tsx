@@ -28,7 +28,7 @@ const FIRST_FLIP_DELAY_MS = 1000
 const PHASE_STAGGER_MS = 450
 
 const CHANNEL_COUNT = 3
-type ChannelIndex = 0 | 1
+type ChannelIndex = 0 | 1 | 2
 
 type CharPos = { lineIndex: number; charIndex: number }
 
