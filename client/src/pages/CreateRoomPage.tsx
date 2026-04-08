@@ -1,6 +1,9 @@
 import { useCallback, useId, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { FlippingText } from '../components/FlippingText'
+import {
+  FlippingLetterPoolProvider,
+  PooledFlippingTitle,
+} from '../components/FlippingLetterPool'
 import { StartRoomModal } from '../components/StartRoomModal'
 import './CreateRoomPage.css'
 
@@ -11,6 +14,12 @@ const ROOM_SIZE_DEFAULT = 4
 const OPTIONS_MIN = 1
 const OPTIONS_MAX = 50
 const OPTIONS_DEFAULT = 3
+
+const CREATE_ROOM_FLIP_LINES = [
+  'What are you deciding on?',
+  'How big is your room?',
+  'How many options per guest?',
+] as const
 
 export type RoomDraft = {
   topic: string
@@ -39,14 +48,15 @@ export function CreateRoomPage() {
         <Link to="/" className="create-room-page__back">
           ← Back
         </Link>
+        <FlippingLetterPoolProvider lines={CREATE_ROOM_FLIP_LINES}>
         <form className="create-room-page__form" onSubmit={submit}>
           <div className="create-room-page__field">
-            <FlippingText
+            <PooledFlippingTitle
+              lineIndex={0}
               id={decidingId}
               as="h1"
-              text="What are you deciding on?"
+              text={CREATE_ROOM_FLIP_LINES[0]}
               className="create-room-page__prompt"
-              startImmediately
             />
             <input
               type="text"
@@ -59,12 +69,12 @@ export function CreateRoomPage() {
           </div>
 
           <div className="create-room-page__field">
-            <FlippingText
+            <PooledFlippingTitle
+              lineIndex={1}
               id={roomSizeId}
               as="h2"
-              text="How big is your room?"
+              text={CREATE_ROOM_FLIP_LINES[1]}
               className="create-room-page__prompt"
-              startImmediately
             />
             <div
               className="create-room-page__stepper"
@@ -103,12 +113,12 @@ export function CreateRoomPage() {
           </div>
 
           <div className="create-room-page__field">
-            <FlippingText
+            <PooledFlippingTitle
+              lineIndex={2}
               id={optionsId}
               as="h2"
-              text="How many options per guest?"
+              text={CREATE_ROOM_FLIP_LINES[2]}
               className="create-room-page__prompt"
-              startImmediately
             />
             <div
               className="create-room-page__stepper"
@@ -150,6 +160,7 @@ export function CreateRoomPage() {
             Create a Room
           </button>
         </form>
+        </FlippingLetterPoolProvider>
       </div>
       <StartRoomModal
         open={shareModalOpen}
