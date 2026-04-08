@@ -32,14 +32,19 @@ const DURATION_MAX = 6.31
 const LAYER_STRIDE = 16
 const LAYER_STEP = 0.08
 
-function flipTimingForLetter(instanceKey: string, index: number): {
+function flipTimingForLetter(
+  instanceKey: string,
+  index: number,
+  startImmediately: boolean,
+): {
   delay: string
   duration: string
 } {
   const rng = mulberry32(hashSeed(`${instanceKey}:${index}`))
   const delayOffset = rng() * DELAY_OFFSET_MAX
   const layer = Math.floor(index / LAYER_STRIDE) * LAYER_STEP
-  const delay = `${(1 + delayOffset + layer).toFixed(2)}s`
+  const base = startImmediately ? 0 : 1
+  const delay = `${(base + delayOffset + layer).toFixed(2)}s`
   const duration = `${(
     DURATION_MIN +
     rng() * (DURATION_MAX - DURATION_MIN)
@@ -87,6 +92,8 @@ export type FlippingTextProps = {
   className?: string
   /** Optional id for `aria-labelledby` / labels */
   id?: string
+  /** Omit the default ~1s animation delay so flips begin as soon as the page paints */
+  startImmediately?: boolean
 }
 
 /**
@@ -98,6 +105,7 @@ export function FlippingText({
   as: Tag = 'span',
   className,
   id,
+  startImmediately = false,
 }: FlippingTextProps) {
   const reducedMotion = usePrefersReducedMotion()
   const instanceKey = useId()
@@ -105,9 +113,11 @@ export function FlippingText({
   const timings = useMemo(
     () =>
       [...text].map((ch, i) =>
-        ch === ' ' ? null : flipTimingForLetter(instanceKey, i),
+        ch === ' '
+          ? null
+          : flipTimingForLetter(instanceKey, i, startImmediately),
       ),
-    [text, instanceKey],
+    [text, instanceKey, startImmediately],
   )
 
   if (reducedMotion) {

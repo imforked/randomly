@@ -46,6 +46,7 @@ export function CreateRoomPage() {
               as="h1"
               text="What are you deciding on?"
               className="create-room-page__prompt"
+              startImmediately
             />
             <input
               type="text"
@@ -63,6 +64,7 @@ export function CreateRoomPage() {
               as="h2"
               text="How big is your room?"
               className="create-room-page__prompt"
+              startImmediately
             />
             <div
               className="create-room-page__stepper"
@@ -106,6 +108,7 @@ export function CreateRoomPage() {
               as="h2"
               text="How many options per guest?"
               className="create-room-page__prompt"
+              startImmediately
             />
             <div
               className="create-room-page__stepper"
