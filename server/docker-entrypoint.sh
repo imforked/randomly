@@ -7,4 +7,4 @@ else
   echo "api: no prisma/migrations — applying schema with db push (add migrations with: prisma migrate dev)"
   npx prisma db push
 fi
-exec npx ts-node --project tsconfig.app.json index.ts
+exec npx tsx index.ts

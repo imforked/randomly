@@ -7,10 +7,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY prisma ./prisma
-COPY prisma.config.ts tsconfig*.json index.ts ambient.d.ts ./
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
+
+COPY . .
 
 RUN npx prisma generate
 
