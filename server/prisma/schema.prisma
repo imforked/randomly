@@ -11,3 +11,11 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model RoomConfig {
+  id              String   @id @default(uuid())
+  topic           String
+  size            Int
+  optionsPerGuest Int
+  expiresAt       DateTime
+}
