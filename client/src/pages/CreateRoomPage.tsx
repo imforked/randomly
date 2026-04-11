@@ -5,14 +5,15 @@ import {
   PooledFlippingTitle,
 } from '../components/FlippingLetterPool'
 import { StartRoomModal } from '../components/StartRoomModal'
+import {
+  OPTIONS_PER_GUEST_MAX as OPTIONS_MAX,
+  OPTIONS_PER_GUEST_MIN as OPTIONS_MIN,
+  ROOM_SIZE_MAX,
+  ROOM_SIZE_MIN,
+} from '@shared/roomConfigLimits.ts'
 import './CreateRoomPage.css'
 
-const ROOM_SIZE_MIN = 1
-const ROOM_SIZE_MAX = 100
 const ROOM_SIZE_DEFAULT = 4
-
-const OPTIONS_MIN = 1
-const OPTIONS_MAX = 50
 const OPTIONS_DEFAULT = 3
 
 const CREATE_ROOM_FLIP_LINES = [
