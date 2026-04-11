@@ -1,7 +1,31 @@
 @import '../modal-shell.css';
 
+.btn.modal-close-btn {
+  position: absolute;
+  top: 0.85rem;
+  right: 20px;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
 .modal-title {
   margin: 0 0 1rem;
+  padding-right: 2.75rem;
   font-size: var(--text-lead);
   font-weight: 600;
   letter-spacing: var(--tracking-body);

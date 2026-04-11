@@ -82,6 +82,28 @@ export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
         tabIndex={-1}
         onTransitionEnd={onPanelTransitionEnd}
       >
+        <button
+          type="button"
+          className="btn btn-secondary modal-close-btn"
+          aria-label="Close"
+          onClick={handleClose}
+        >
+          <svg
+            className="modal-close-btn__icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            aria-hidden={true}
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              d="M6 6l12 12M18 6L6 18"
+            />
+          </svg>
+        </button>
         <FlippingLetterPoolProvider lines={SHARE_ROOM_FLIP_LINES}>
           <PooledFlippingTitle
             lineIndex={0}
