@@ -46,7 +46,7 @@ export function CreateRoomPage() {
   return (
     <main className="shell shell-landing">
       <div className="stack-lg">
-        <Link to="/" className="create-room-page__back">
+        <Link to="/" className="btn btn-secondary create-room-page__back">
           ← Back
         </Link>
         <FlippingLetterPoolProvider lines={CREATE_ROOM_FLIP_LINES}>

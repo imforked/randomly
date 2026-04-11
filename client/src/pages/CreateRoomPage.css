@@ -1,13 +1,7 @@
 .create-room-page__back {
   align-self: flex-start;
-  margin: 0;
-  font-size: var(--text-body);
-  color: var(--color-accent);
-  text-decoration: none;
-}
-
-.create-room-page__back:hover {
-  color: var(--color-accent-hover);
+  width: auto;
+  max-width: none;
 }
 
 .create-room-page__form {
