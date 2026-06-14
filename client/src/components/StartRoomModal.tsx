@@ -1,69 +1,76 @@
-import { useCallback, useEffect, useId, useState } from 'react'
-import type { ComponentType, SVGProps } from 'react'
-import * as ReactQRCode from 'react-qr-code'
+import { useCallback, useEffect, useId, useState } from "react";
+import type { ComponentType, SVGProps } from "react";
+import * as ReactQRCode from "react-qr-code";
 import {
   FlippingLetterPoolProvider,
   PooledFlippingTitle,
-} from './FlippingLetterPool'
-import { usePrefersReducedMotion } from '../usePrefersReducedMotion'
-import { useAnimatedModal } from '../useAnimatedModal'
-import './StartRoomModal.css'
+} from "./FlippingLetterPool";
+import { usePrefersReducedMotion } from "../usePrefersReducedMotion";
+import { useAnimatedModal } from "../useAnimatedModal";
+import "./StartRoomModal.css";
 
-const SHARE_ROOM_FLIP_LINES = ['Share the Room'] as const
+const SHARE_ROOM_FLIP_LINES = ["Share the Room"] as const;
 
 /** Named runtime export; default import is a broken nested object under Vite ESM/CJS interop. */
 type QRCodeProps = SVGProps<SVGSVGElement> & {
-  value: string
-  size?: number
-  level?: 'L' | 'M' | 'Q' | 'H'
-}
+  value: string;
+  size?: number;
+  level?: "L" | "M" | "Q" | "H";
+};
 
-const QRCode = (ReactQRCode as unknown as { QRCode: ComponentType<QRCodeProps> })
-  .QRCode
+const QRCode = (
+  ReactQRCode as unknown as { QRCode: ComponentType<QRCodeProps> }
+).QRCode;
 
 type StartRoomModalProps = {
-  open: boolean
-  onClose: () => void
-}
+  open: boolean;
+  onClose: () => void;
+  roomUrl:
+    | null
+    | `${string}/${string}`
+    | `https://www.randomlyapp.com/${string}`;
+};
 
-export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
-  const titleId = useId()
-  const [copied, setCopied] = useState(false)
-  const reducedMotion = usePrefersReducedMotion()
+export function StartRoomModal({
+  open,
+  onClose,
+  roomUrl,
+}: StartRoomModalProps) {
+  const titleId = useId();
+  const [copied, setCopied] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
   const { shouldMount, rootClass, panelRef, onPanelTransitionEnd } =
     useAnimatedModal(open, reducedMotion, {
-      rootClassExtra: 'modal-root--layer-above',
-    })
-
-  const roomUrl = `${window.location.origin}/`
+      rootClassExtra: "modal-root--layer-above",
+    });
 
   const handleClose = useCallback(() => {
-    setCopied(false)
-    onClose()
-  }, [onClose])
+    setCopied(false);
+    onClose();
+  }, [onClose]);
 
   const copyLink = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(roomUrl)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(roomUrl ?? "");
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      setCopied(false)
+      setCopied(false);
     }
-  }, [roomUrl])
+  }, [roomUrl]);
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose()
-    }
+      if (e.key === "Escape") handleClose();
+    };
 
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [open, handleClose])
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, handleClose]);
 
-  if (!shouldMount) return null
+  if (!shouldMount) return null;
 
   return (
     <div className={rootClass}>
@@ -114,7 +121,7 @@ export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
           />
           <div className="modal-qr-wrap">
             <QRCode
-              value={roomUrl}
+              value={roomUrl ?? ""}
               size={256}
               className="modal-qr-code"
               level="M"
@@ -126,14 +133,17 @@ export function StartRoomModal({ open, onClose }: StartRoomModalProps) {
               className="btn btn-secondary modal-copy-btn"
               onClick={copyLink}
             >
-              {copied ? 'Copied' : 'Copy Link'}
+              {copied ? "Copied" : "Copy Link"}
             </button>
-            <a href={roomUrl} className="btn btn-secondary modal-go-room-btn">
+            <a
+              href={roomUrl ?? ""}
+              className="btn btn-secondary modal-go-room-btn"
+            >
               Go to Room
             </a>
           </div>
         </FlippingLetterPoolProvider>
       </div>
     </div>
-  )
+  );
 }
