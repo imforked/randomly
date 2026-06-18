@@ -1,6 +1,27 @@
 import { Request, Response } from "express";
 import { roomConfigCreateBodySchema } from "../schemas/roomConfig.ts";
-import { createRoomConfig } from "../services/rooms.service.ts";
+import {
+  createRoomConfig,
+  fetchRoomById,
+  isRoomExpired,
+} from "../services/rooms.service.ts";
+import { RoomConfig } from "../generated/prisma/client.ts";
+
+const loadActiveRoom = async (
+  roomId: string,
+  res: Response
+): Promise<RoomConfig | null> => {
+  const room = await fetchRoomById({ id: roomId });
+  if (room === null) {
+    res.status(404).json({ error: "Room not found." });
+    return null;
+  }
+  if (isRoomExpired(room)) {
+    res.status(410).json({ error: "Room expired." });
+    return null;
+  }
+  return room;
+};
 
 export const createRoom = async (req: Request, res: Response) => {
   const parsed = roomConfigCreateBodySchema.safeParse(req.body);
@@ -14,4 +35,40 @@ export const createRoom = async (req: Request, res: Response) => {
   const createdRoomConfig = await createRoomConfig(parsed.data);
 
   return res.status(201).json(createdRoomConfig);
+};
+
+export const getRoomById = async (req: Request, res: Response) => {
+  const roomId = req.params.id;
+
+  if (typeof roomId !== "string") {
+    return res.status(400).json({ error: "Invalid room id." });
+  }
+
+  const room = await loadActiveRoom(roomId, res);
+
+  if (room === null) return;
+
+  return res.status(200).json(room);
+};
+
+export const getRoomOccupancy = async (req: Request, res: Response) => {
+  const roomId = req.params.id;
+
+  if (typeof roomId !== "string") {
+    return res.status(400).json({ error: "Invalid room id." });
+  }
+
+  const room = await loadActiveRoom(roomId, res);
+
+  if (room === null) return;
+
+  // TODO: replace this with WebSocket presence
+  const activeCount = 0;
+
+  return res.status(200).json({
+    roomId: room.id,
+    capacity: room.size,
+    activeCount,
+    spotsRemaining: Math.max(room.size - activeCount, 0),
+  });
 };

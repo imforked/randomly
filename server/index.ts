@@ -2,14 +2,10 @@ import express from "express";
 import cors from "cors";
 import { errorHandler } from "./middleware/index.ts";
 import { roomsRouter } from "./routes/rooms.ts";
+import { createServer } from "node:http";
 
 const app = express();
 const PORT = 3000;
-
-const allowedOrigins = new Set([
-  "http://localhost:5173",
-  "https://www.randomlyapp.com",
-]);
 
 app.use(
   cors({
@@ -23,6 +19,8 @@ app.use(roomsRouter);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+
+httpServer.listen(PORT, () => {
   console.log(`The server has started on port ${PORT} 🤠`);
 });

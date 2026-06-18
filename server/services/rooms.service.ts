@@ -10,10 +10,14 @@ export const createRoomConfig = async (
   });
 };
 
-export const getRoomConfig = async (roomId: Pick<RoomConfig, "id">) => {
+export const fetchRoomById = async (roomId: Pick<RoomConfig, "id">) => {
   return await prisma.roomConfig.findUnique({ where: roomId });
 };
 
 export const deleteRoomConfig = async (roomId: Pick<RoomConfig, "id">) => {
   return await prisma.roomConfig.delete({ where: roomId });
+};
+
+export const isRoomExpired = (room: RoomConfig): boolean => {
+  return Number(room.expiresAt) < Date.now();
 };
