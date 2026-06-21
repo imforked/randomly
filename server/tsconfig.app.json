@@ -20,6 +20,7 @@
     "middleware/**/*.ts",
     "constants/**/*.ts",
     "realtime/**/*.ts",
-    "types/**/*.ts"
+    "types/**/*.ts",
+    "realtime/handlers"
   ]
 }

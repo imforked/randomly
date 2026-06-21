@@ -1,11 +1,10 @@
-import { RoomConfig } from "../generated/prisma/client.ts";
-import { RoomOccupancyPayload } from "../types/realtime.ts";
+import { RoomOccupancyPayload, RoomId } from "../types/realtime.ts";
 
-const rooms = new Map<Pick<RoomConfig, "id">, Map<string, string>>();
+const rooms = new Map<string, Map<string, string>>();
 
 const socketIndex = new Map<
   string,
-  { roomId: Pick<RoomConfig, "id">; participantId: string }
+  { roomId: RoomId; participantId: string }
 >();
 
 type JoinResult =
@@ -14,12 +13,12 @@ type JoinResult =
   | { ok: false; reason: "FULL" };
 
 type LeaveByPayloadResult =
-  | { ok: true; roomId: Pick<RoomConfig, "id">; participantId: string }
+  | { ok: true; roomId: RoomId; participantId: string }
   | { ok: false; reason: "INVALID_PAYLOAD" }
   | { ok: false; reason: "NOOP" };
 
 type LeaveBySocketResult =
-  | { ok: true; roomId: Pick<RoomConfig, "id">; participantId: string }
+  | { ok: true; roomId: RoomId; participantId: string }
   | { ok: false; reason: "NOOP" };
 
 export const tryJoin = ({
@@ -28,12 +27,12 @@ export const tryJoin = ({
   socketId,
   capacity,
 }: {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
   socketId: string;
   capacity: number;
 }): JoinResult => {
-  let guestList = rooms.get(roomId);
+  let guestList = rooms.get(roomId.id);
 
   const socketForParticipant = guestList?.get(participantId);
 
@@ -51,7 +50,7 @@ export const tryJoin = ({
 
   if (!guestList) {
     guestList = new Map();
-    rooms.set(roomId, guestList);
+    rooms.set(roomId.id, guestList);
   }
 
   guestList.set(participantId, socketId);
@@ -65,7 +64,7 @@ export const leaveByPayload = ({
   participantId,
   socketId,
 }: {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
   socketId: string;
 }): LeaveByPayloadResult => {
@@ -76,19 +75,19 @@ export const leaveByPayload = ({
   }
 
   if (
-    registered.roomId !== roomId ||
+    registered.roomId.id !== roomId.id ||
     registered.participantId !== participantId
   ) {
     return { ok: false, reason: "INVALID_PAYLOAD" };
   }
 
-  const guestList = rooms.get(roomId);
+  const guestList = rooms.get(roomId.id);
 
   if (guestList) {
     guestList?.delete(participantId);
 
     if (guestList?.size === 0) {
-      rooms.delete(roomId);
+      rooms.delete(roomId.id);
     }
   }
 
@@ -110,13 +109,13 @@ export const leaveBySocketId = ({
 
   const { roomId, participantId } = registered;
 
-  const guestList = rooms.get(roomId);
+  const guestList = rooms.get(roomId.id);
 
   if (guestList) {
     guestList?.delete(participantId);
 
     if (guestList?.size === 0) {
-      rooms.delete(roomId);
+      rooms.delete(roomId.id);
     }
   }
 
@@ -129,10 +128,10 @@ export const getOccupancy = ({
   roomId,
   capacity,
 }: {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   capacity: number;
 }): RoomOccupancyPayload => {
-  const guestList = rooms.get(roomId);
+  const guestList = rooms.get(roomId.id);
 
   const activeCount = guestList?.size ? guestList.size : 0;
 

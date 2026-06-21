@@ -1,5 +1,7 @@
 import { RoomConfig } from "../generated/prisma/client.ts";
 
+export type RoomId = Pick<RoomConfig, "id">;
+
 export enum CLIENT_EVENTS {
   JOIN = "room:join",
   LEAVE = "room:leave",
@@ -14,34 +16,34 @@ export enum SERVER_EVENTS {
 }
 
 export type RoomJoinPayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
 };
 
 export type RoomLeavePayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
 };
 
 export type RoomJoinedPayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
 };
 
 export type RoomLeftPayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   participantId: string;
 };
 
 export type RoomOccupancyPayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   capacity: number;
   activeCount: number;
   spotsRemaining: number;
 };
 
 export type RoomFullPayload = {
-  roomId: Pick<RoomConfig, "id">;
+  roomId: RoomId;
   capacity: number;
   activeCount: number;
 };
@@ -54,6 +56,11 @@ export type Payload =
   | RoomOccupancyPayload
   | RoomFullPayload
   | RoomErrorPayload;
+
+export type ClientPayload = {
+  roomId: string;
+  participantId: string;
+};
 
 export enum REALTIME_ERROR_CODES {
   ROOM_NOT_FOUND = "ROOM_NOT_FOUND",
