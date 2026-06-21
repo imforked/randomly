@@ -18,6 +18,8 @@
     "controllers/**/*.ts",
     "services/**/*.ts",
     "middleware/**/*.ts",
-    "constants/**/*.ts"
+    "constants/**/*.ts",
+    "realtime/**/*.ts",
+    "types/**/*.ts"
   ]
 }

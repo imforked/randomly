@@ -3,6 +3,7 @@ import cors from "cors";
 import { errorHandler } from "./middleware/index.ts";
 import { roomsRouter } from "./routes/rooms.ts";
 import { createServer } from "node:http";
+import { attachSocketServer } from "./realtime/socketServer.ts";
 
 const app = express();
 const PORT = 3000;
@@ -19,8 +20,10 @@ app.use(roomsRouter);
 
 app.use(errorHandler);
 
-const httpServer = createServer(app);
+const server = createServer(app);
 
-httpServer.listen(PORT, () => {
+attachSocketServer(server);
+
+server.listen(PORT, () => {
   console.log(`The server has started on port ${PORT} 🤠`);
 });

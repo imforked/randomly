@@ -1,10 +1,11 @@
+import { RoomConfig } from "../generated/prisma/client.ts";
 import { RoomOccupancyPayload } from "../types/realtime.ts";
 
-const rooms = new Map<string, Map<string, string>>();
+const rooms = new Map<Pick<RoomConfig, "id">, Map<string, string>>();
 
 const socketIndex = new Map<
   string,
-  { roomId: string; participantId: string }
+  { roomId: Pick<RoomConfig, "id">; participantId: string }
 >();
 
 type JoinResult =
@@ -13,12 +14,12 @@ type JoinResult =
   | { ok: false; reason: "FULL" };
 
 type LeaveByPayloadResult =
-  | { ok: true; roomId: string; participantId: string }
+  | { ok: true; roomId: Pick<RoomConfig, "id">; participantId: string }
   | { ok: false; reason: "INVALID_PAYLOAD" }
   | { ok: false; reason: "NOOP" };
 
 type LeaveBySocketResult =
-  | { ok: true; roomId: string; participantId: string }
+  | { ok: true; roomId: Pick<RoomConfig, "id">; participantId: string }
   | { ok: false; reason: "NOOP" };
 
 export const tryJoin = ({
@@ -27,7 +28,7 @@ export const tryJoin = ({
   socketId,
   capacity,
 }: {
-  roomId: string;
+  roomId: Pick<RoomConfig, "id">;
   participantId: string;
   socketId: string;
   capacity: number;
@@ -64,7 +65,7 @@ export const leaveByPayload = ({
   participantId,
   socketId,
 }: {
-  roomId: string;
+  roomId: Pick<RoomConfig, "id">;
   participantId: string;
   socketId: string;
 }): LeaveByPayloadResult => {
@@ -99,8 +100,6 @@ export const leaveByPayload = ({
 export const leaveBySocketId = ({
   socketId,
 }: {
-  roomId: string;
-  participantId: string;
   socketId: string;
 }): LeaveBySocketResult => {
   const registered = socketIndex.get(socketId);
@@ -130,7 +129,7 @@ export const getOccupancy = ({
   roomId,
   capacity,
 }: {
-  roomId: string;
+  roomId: Pick<RoomConfig, "id">;
   capacity: number;
 }): RoomOccupancyPayload => {
   const guestList = rooms.get(roomId);
