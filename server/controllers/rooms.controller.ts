@@ -6,6 +6,8 @@ import {
   isRoomExpired,
 } from "../services/rooms.service.ts";
 import { RoomConfig } from "../generated/prisma/client.ts";
+import { getOccupancy } from "../services/presence.service.ts";
+import { type RoomId } from "../types/realtime.ts";
 
 const loadActiveRoom = async (
   roomId: string,
@@ -62,13 +64,15 @@ export const getRoomOccupancy = async (req: Request, res: Response) => {
 
   if (room === null) return;
 
-  // TODO: replace this with WebSocket presence
-  const activeCount = 0;
+  const { activeCount, spotsRemaining } = getOccupancy({
+    roomId: { id: roomId },
+    capacity: room.size,
+  });
 
   return res.status(200).json({
     roomId: room.id,
     capacity: room.size,
     activeCount,
-    spotsRemaining: Math.max(room.size - activeCount, 0),
+    spotsRemaining,
   });
 };
