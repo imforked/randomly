@@ -7,7 +7,6 @@ import {
 } from "../services/rooms.service.ts";
 import { RoomConfig } from "../generated/prisma/client.ts";
 import { getOccupancy } from "../services/presence.service.ts";
-import { type RoomId } from "../types/realtime.ts";
 
 const loadActiveRoom = async (
   roomId: string,
