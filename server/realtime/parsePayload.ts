@@ -23,14 +23,14 @@ export const getRoomId = ({
   return { id: payload.roomId };
 };
 
-export const getParticipantId = ({
+export const getUserId = ({
   socket,
   payload,
 }: {
   socket: WebSocket;
   payload: ClientPayload;
 }): string | null => {
-  if (typeof payload?.participantId !== "string") {
+  if (typeof payload?.userId !== "string") {
     sendError({
       socket,
       errorType: REALTIME_ERROR_CODES.INVALID_PAYLOAD,
@@ -40,5 +40,5 @@ export const getParticipantId = ({
     return null;
   }
 
-  return payload.participantId;
+  return payload.userId;
 };

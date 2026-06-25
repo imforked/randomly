@@ -17,22 +17,22 @@ export enum SERVER_EVENTS {
 
 export type RoomJoinPayload = {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
 };
 
 export type RoomLeavePayload = {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
 };
 
 export type RoomJoinedPayload = {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
 };
 
 export type RoomLeftPayload = {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
 };
 
 export type RoomOccupancyPayload = {
@@ -59,7 +59,7 @@ export type Payload =
 
 export type ClientPayload = {
   roomId: string;
-  participantId: string;
+  userId: string;
 };
 
 export enum REALTIME_ERROR_CODES {

@@ -5,7 +5,7 @@ import {
   REALTIME_ERROR_CODES,
   SERVER_EVENTS,
 } from "../../types/realtime.ts";
-import { getRoomId, getParticipantId } from "../parsePayload.ts";
+import { getRoomId, getUserId } from "../parsePayload.ts";
 import { addSocketToRoom, broadcastOccupancy } from "../roomSocket.ts";
 import { sendError, send } from "../send.ts";
 import {
@@ -24,7 +24,7 @@ export const handleJoin = async ({
   payload: ClientPayload;
 }) => {
   const roomId = getRoomId({ socket, payload });
-  const participantId = getParticipantId({ socket, payload });
+  const userId = getUserId({ socket, payload });
 
   if (roomId === null) {
     return;
@@ -64,13 +64,13 @@ export const handleJoin = async ({
     return;
   }
 
-  if (participantId === null) {
+  if (userId === null) {
     return;
   }
 
   const join = tryJoin({
     roomId,
-    participantId,
+    userId,
     socketId,
     capacity,
   });
@@ -116,7 +116,7 @@ export const handleJoin = async ({
       event: SERVER_EVENTS.JOINED,
       payload: {
         roomId,
-        participantId,
+        userId,
       },
     });
 

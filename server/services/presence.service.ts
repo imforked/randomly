@@ -4,7 +4,7 @@ const rooms = new Map<string, Map<string, string>>();
 
 const socketIndex = new Map<
   string,
-  { roomId: RoomId; participantId: string }
+  { roomId: RoomId; userId: string }
 >();
 
 type JoinResult =
@@ -13,34 +13,34 @@ type JoinResult =
   | { ok: false; reason: "FULL" };
 
 type LeaveByPayloadResult =
-  | { ok: true; roomId: RoomId; participantId: string }
+  | { ok: true; roomId: RoomId; userId: string }
   | { ok: false; reason: "INVALID_PAYLOAD" }
   | { ok: false; reason: "NOOP" };
 
 type LeaveBySocketResult =
-  | { ok: true; roomId: RoomId; participantId: string }
+  | { ok: true; roomId: RoomId; userId: string }
   | { ok: false; reason: "NOOP" };
 
 export const tryJoin = ({
   roomId,
-  participantId,
+  userId,
   socketId,
   capacity,
 }: {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
   socketId: string;
   capacity: number;
 }): JoinResult => {
   let guestList = rooms.get(roomId.id);
 
-  const socketForParticipant = guestList?.get(participantId);
+  const socketForUser = guestList?.get(userId);
 
-  if (socketForParticipant) {
+  if (socketForUser) {
     return { ok: false, reason: "ALREADY_CONNECTED" };
   }
 
-  if (!socketForParticipant) {
+  if (!socketForUser) {
     const headCount = guestList ? guestList.size : 0;
 
     if (headCount >= capacity) {
@@ -53,19 +53,19 @@ export const tryJoin = ({
     rooms.set(roomId.id, guestList);
   }
 
-  guestList.set(participantId, socketId);
-  socketIndex.set(socketId, { roomId, participantId });
+  guestList.set(userId, socketId);
+  socketIndex.set(socketId, { roomId, userId });
 
   return { ok: true };
 };
 
 export const leaveByPayload = ({
   roomId,
-  participantId,
+  userId,
   socketId,
 }: {
   roomId: RoomId;
-  participantId: string;
+  userId: string;
   socketId: string;
 }): LeaveByPayloadResult => {
   const registered = socketIndex.get(socketId);
@@ -76,7 +76,7 @@ export const leaveByPayload = ({
 
   if (
     registered.roomId.id !== roomId.id ||
-    registered.participantId !== participantId
+    registered.userId !== userId
   ) {
     return { ok: false, reason: "INVALID_PAYLOAD" };
   }
@@ -84,7 +84,7 @@ export const leaveByPayload = ({
   const guestList = rooms.get(roomId.id);
 
   if (guestList) {
-    guestList?.delete(participantId);
+    guestList?.delete(userId);
 
     if (guestList?.size === 0) {
       rooms.delete(roomId.id);
@@ -93,7 +93,7 @@ export const leaveByPayload = ({
 
   socketIndex.delete(socketId);
 
-  return { ok: true, roomId, participantId };
+  return { ok: true, roomId, userId };
 };
 
 export const leaveBySocketId = ({
@@ -107,12 +107,12 @@ export const leaveBySocketId = ({
     return { ok: false, reason: "NOOP" };
   }
 
-  const { roomId, participantId } = registered;
+  const { roomId, userId } = registered;
 
   const guestList = rooms.get(roomId.id);
 
   if (guestList) {
-    guestList?.delete(participantId);
+    guestList?.delete(userId);
 
     if (guestList?.size === 0) {
       rooms.delete(roomId.id);
@@ -121,7 +121,7 @@ export const leaveBySocketId = ({
 
   socketIndex.delete(socketId);
 
-  return { ok: true, roomId, participantId };
+  return { ok: true, roomId, userId };
 };
 
 export const getOccupancy = ({

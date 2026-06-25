@@ -10,14 +10,14 @@ export const handleLeave = async ({
   socket,
   socketId,
   roomId,
-  participantId,
+  userId,
 }: {
   socket: WebSocket;
   socketId: string;
   roomId: RoomId;
-  participantId: string;
+  userId: string;
 }) => {
-  const leave = leaveByPayload({ roomId, participantId, socketId });
+  const leave = leaveByPayload({ roomId, userId, socketId });
 
   if (!leave.ok && leave.reason === "NOOP") {
     return;
@@ -51,7 +51,7 @@ export const handleLeave = async ({
       event: SERVER_EVENTS.LEFT,
       payload: {
         roomId,
-        participantId,
+        userId,
       },
     });
 

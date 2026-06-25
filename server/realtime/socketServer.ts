@@ -2,7 +2,7 @@ import { Server } from "node:http";
 import { WebSocketServer } from "ws";
 import { REALTIME_ERROR_CODES, CLIENT_EVENTS } from "../types/realtime.ts";
 import { sendError } from "./send.ts";
-import { getRoomId, getParticipantId } from "./parsePayload.ts";
+import { getRoomId, getUserId } from "./parsePayload.ts";
 import { handleJoin, handleDisconnect, handleLeave } from "./handlers/index.ts";
 import { INVALID_MESSAGE_FORMAT } from "../constants/errorMessages.ts";
 
@@ -65,13 +65,13 @@ export const attachSocketServer = (server: Server) => {
 
       if (event === CLIENT_EVENTS.LEAVE) {
         const roomId = getRoomId({ socket, payload });
-        const participantId = getParticipantId({ socket, payload });
+        const userId = getUserId({ socket, payload });
 
         if (roomId === null) {
           return;
         }
 
-        if (participantId === null) {
+        if (userId === null) {
           return;
         }
 
@@ -79,7 +79,7 @@ export const attachSocketServer = (server: Server) => {
           socket,
           socketId,
           roomId,
-          participantId,
+          userId,
         });
 
         return;
