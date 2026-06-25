@@ -10,3 +10,4 @@ roomsRouter.get("/api/rooms/:id/occupancy", roomsController.getRoomOccupancy);
 roomsRouter.get("/api/rooms/:id", roomsController.getRoomById);
 roomsRouter.post("/api/rooms/:id/users", userController.createUser);
 roomsRouter.post("/api/rooms/:id/options", optionController.createOptions);
+roomsRouter.get("/api/rooms/:id/users", userController.getUsers);

@@ -1,6 +1,5 @@
 import { User } from "../generated/prisma/client.ts";
 import { prisma } from "../lib/prisma.ts";
-import { RoomId } from "../types/realtime.ts";
 
 export const createUser = async (user: Pick<User, "name" | "roomId">) => {
   return await prisma.user.create({
@@ -24,9 +23,9 @@ export const countUsersInRoom = async ({ roomId }: { roomId: string }) => {
   return await prisma.user.count({ where: { roomId } });
 };
 
-export const getUsersInRoom = async ({ roomId }: { roomId: RoomId }) => {
+export const getUsersInRoom = async ({ roomId }: { roomId: string }) => {
   return await prisma.user.findMany({
-    where: { roomId: roomId.id },
+    where: { roomId: roomId },
     orderBy: { createdAt: "asc" },
   });
 };
