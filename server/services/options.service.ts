@@ -16,3 +16,11 @@ export const countUserOptionsInRoom = async ({
 }) => {
   return await prisma.option.count({ where: { userId, roomId } });
 };
+
+export const getOptionsInRoom = async ({ roomId }: { roomId: string }) => {
+  return await prisma.option.findMany({
+    where: { roomId },
+    include: { user: true },
+    orderBy: { createdAt: "asc" },
+  });
+};

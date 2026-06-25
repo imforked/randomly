@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   countUserOptionsInRoom,
   createOptions as createOptionsConfig,
+  getOptionsInRoom,
 } from "../services/options.service.ts";
 import { optionsCreateBodySchema } from "../schemas/options.ts";
 import { loadActiveRoom } from "./utils.ts";
@@ -58,4 +59,22 @@ export const createOptions = async (req: Request, res: Response) => {
   );
 
   return res.status(201).json(options);
+};
+
+export const getOptionsWithUsers = async (req: Request, res: Response) => {
+  let roomId = req.params.id;
+
+  if (typeof roomId !== "string") {
+    return res.status(400).json({ error: "Invalid room id." });
+  }
+
+  const room = await loadActiveRoom(roomId, res);
+
+  if (!room) {
+    return;
+  }
+
+  const optionsWithUsers = await getOptionsInRoom({ roomId });
+
+  return res.status(200).json(optionsWithUsers);
 };
