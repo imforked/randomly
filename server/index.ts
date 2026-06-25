@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { errorHandler } from "./middleware/index.ts";
-import { roomsRouter } from "./routes/rooms.ts";
+import { PATH_PREFIX, roomsRouter } from "./routes/rooms.ts";
 import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
 
@@ -16,7 +16,7 @@ app.use(
 
 app.use(express.json());
 
-app.use(roomsRouter);
+app.use(PATH_PREFIX, roomsRouter);
 
 app.use(errorHandler);
 

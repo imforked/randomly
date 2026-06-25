@@ -3,6 +3,7 @@ import {
   countUserOptionsInRoom,
   createOptions as createOptionsConfig,
   getOptionsInRoom,
+  selectRandomOption,
 } from "../services/options.service.ts";
 import { optionsCreateBodySchema } from "../schemas/options.ts";
 import { loadActiveRoom } from "./utils.ts";
@@ -77,4 +78,26 @@ export const getOptionsWithUsers = async (req: Request, res: Response) => {
   const optionsWithUsers = await getOptionsInRoom({ roomId });
 
   return res.status(200).json(optionsWithUsers);
+};
+
+export const getRandomOption = async (req: Request, res: Response) => {
+  let roomId = req.params.id;
+
+  if (typeof roomId !== "string") {
+    return res.status(400).json({ error: "Invalid room id." });
+  }
+
+  const room = await loadActiveRoom(roomId, res);
+
+  if (!room) {
+    return;
+  }
+
+  const randomOption = await selectRandomOption({ roomId });
+
+  if (!randomOption) {
+    return res.status(404).json({ error: "No options found for this room." });
+  }
+
+  return res.status(200).json(randomOption);
 };

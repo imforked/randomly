@@ -24,3 +24,18 @@ export const getOptionsInRoom = async ({ roomId }: { roomId: string }) => {
     orderBy: { createdAt: "asc" },
   });
 };
+
+export const selectRandomOption = async ({ roomId }: { roomId: string }) => {
+  const options = await prisma.option.findMany({
+    where: { roomId },
+    include: { user: true },
+  });
+
+  if (!options.length) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * options.length);
+
+  return options[randomIndex];
+};

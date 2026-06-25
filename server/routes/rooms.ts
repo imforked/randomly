@@ -5,10 +5,13 @@ import * as optionController from "../controllers/option.controller.ts";
 
 export const roomsRouter = express.Router();
 
-roomsRouter.post("/api/rooms/create", roomsController.createRoom);
-roomsRouter.get("/api/rooms/:id/occupancy", roomsController.getRoomOccupancy);
-roomsRouter.get("/api/rooms/:id", roomsController.getRoomById);
-roomsRouter.post("/api/rooms/:id/users", userController.createUser);
-roomsRouter.post("/api/rooms/:id/options", optionController.createOptions);
-roomsRouter.get("/api/rooms/:id/users", userController.getUsers);
-roomsRouter.get("/api/rooms/:id/options", optionController.getOptionsWithUsers);
+export const PATH_PREFIX = "/api/rooms";
+
+roomsRouter.post("/create", roomsController.createRoom);
+roomsRouter.get("/:id/occupancy", roomsController.getRoomOccupancy);
+roomsRouter.get("/:id", roomsController.getRoomById);
+roomsRouter.post("/:id/users", userController.createUser);
+roomsRouter.post("/:id/options", optionController.createOptions);
+roomsRouter.get("/:id/users", userController.getUsers);
+roomsRouter.get("/:id/options", optionController.getOptionsWithUsers);
+roomsRouter.get("/:id/random", optionController.getRandomOption);
