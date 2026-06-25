@@ -6,3 +6,19 @@ export const createUser = async (user: Pick<User, "name" | "roomId">) => {
     data: { ...user },
   });
 };
+
+export const getUserInRoom = async ({
+  userId,
+  roomId,
+}: {
+  userId: string;
+  roomId: string;
+}) => {
+  return await prisma.user.findFirst({
+    where: { id: userId, roomId },
+  });
+};
+
+export const countUsersInRoom = async ({ roomId }: { roomId: string }) => {
+  return await prisma.user.count({ where: { roomId } });
+};

@@ -7,22 +7,7 @@ import {
 } from "../services/rooms.service.ts";
 import { RoomConfig } from "../generated/prisma/client.ts";
 import { getOccupancy } from "../services/presence.service.ts";
-
-const loadActiveRoom = async (
-  roomId: string,
-  res: Response
-): Promise<RoomConfig | null> => {
-  const room = await fetchRoomById({ id: roomId });
-  if (room === null) {
-    res.status(404).json({ error: "Room not found." });
-    return null;
-  }
-  if (isRoomExpired(room)) {
-    res.status(410).json({ error: "Room expired." });
-    return null;
-  }
-  return room;
-};
+import { loadActiveRoom } from "./utils.ts";
 
 export const createRoom = async (req: Request, res: Response) => {
   const parsed = roomConfigCreateBodySchema.safeParse(req.body);

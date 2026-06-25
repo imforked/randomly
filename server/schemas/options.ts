@@ -1,10 +1,8 @@
 import { z } from "zod";
-import {
-  OPTIONS_PER_GUEST_MIN,
-  OPTIONS_PER_GUEST_MAX,
-} from "../constants/roomConfigLimits.ts";
+import { OPTIONS_PER_GUEST_MAX } from "../constants/roomConfigLimits.ts";
 
 export const optionsCreateBodySchema = z.object({
+  userId: z.string().min(1, { error: "userId required." }),
   options: z
     .array(
       z

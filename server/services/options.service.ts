@@ -6,3 +6,13 @@ export const createOptions = async (
 ) => {
   return await prisma.option.createManyAndReturn({ data: options });
 };
+
+export const countUserOptionsInRoom = async ({
+  userId,
+  roomId,
+}: {
+  userId: string;
+  roomId: string;
+}) => {
+  return await prisma.option.count({ where: { userId, roomId } });
+};
