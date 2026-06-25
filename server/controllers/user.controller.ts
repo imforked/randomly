@@ -6,7 +6,6 @@ import {
   getUsersInRoom,
 } from "../services/user.service.ts";
 import { loadActiveRoom } from "./utils.ts";
-import { RoomId } from "../types/realtime.ts";
 
 export const createUser = async (req: Request, res: Response) => {
   const parsed = userCreateBodySchema.safeParse(req.body);

@@ -25,7 +25,7 @@ export const countUsersInRoom = async ({ roomId }: { roomId: string }) => {
 
 export const getUsersInRoom = async ({ roomId }: { roomId: string }) => {
   return await prisma.user.findMany({
-    where: { roomId: roomId },
+    where: { roomId },
     orderBy: { createdAt: "asc" },
   });
 };
