@@ -1,4 +1,4 @@
-import { RoomConfig } from "../generated/prisma/client.ts";
+import { RoomConfig, User } from "../generated/prisma/client.ts";
 
 export type RoomId = Pick<RoomConfig, "id">;
 
@@ -27,7 +27,7 @@ export type RoomLeavePayload = {
 
 export type RoomJoinedPayload = {
   roomId: RoomId;
-  userId: string;
+  user: Pick<User, "id" | "name">;
 };
 
 export type RoomLeftPayload = {

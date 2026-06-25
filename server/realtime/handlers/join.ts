@@ -13,6 +13,7 @@ import {
   ROOM_NOT_FOUND,
 } from "../../constants/errorMessages.ts";
 import { WebSocket } from "ws";
+import { getUserInRoom } from "../../services/user.service.ts";
 
 export const handleJoin = async ({
   socket,
@@ -64,8 +65,22 @@ export const handleJoin = async ({
     return;
   }
 
-  if (userId === null) {
-    return;
+  if (!userId) {
+    return sendError({
+      socket,
+      errorType: REALTIME_ERROR_CODES.INVALID_PAYLOAD,
+      errorMessage: "Invalid userId",
+    });
+  }
+
+  const user = await getUserInRoom({ userId, roomId: roomId.id });
+
+  if (!user) {
+    return sendError({
+      socket,
+      errorType: REALTIME_ERROR_CODES.INVALID_PAYLOAD,
+      errorMessage: "Invalid userId",
+    });
   }
 
   const join = tryJoin({
@@ -116,7 +131,10 @@ export const handleJoin = async ({
       event: SERVER_EVENTS.JOINED,
       payload: {
         roomId,
-        userId,
+        user: {
+          id: user.id,
+          name: user.name,
+        },
       },
     });
 
