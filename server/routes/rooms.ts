@@ -2,6 +2,7 @@ import express from "express";
 import * as roomsController from "../controllers/rooms.controller.ts";
 import * as userController from "../controllers/user.controller.ts";
 import * as optionController from "../controllers/option.controller.ts";
+import * as submissionsController from "../controllers/submissions.controller.ts";
 
 export const roomsRouter = express.Router();
 
@@ -15,3 +16,4 @@ roomsRouter.post("/:id/options", optionController.createOptions);
 roomsRouter.get("/:id/users", userController.getUsers);
 roomsRouter.get("/:id/options", optionController.getOptionsWithUsers);
 roomsRouter.get("/:id/random", optionController.getRandomOption);
+roomsRouter.get("/:id/submissions", submissionsController.getRoomSubmissions);

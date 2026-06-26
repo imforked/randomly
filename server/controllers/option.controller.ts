@@ -8,6 +8,8 @@ import {
 import { optionsCreateBodySchema } from "../schemas/options.ts";
 import { loadActiveRoom } from "./utils.ts";
 import { getUserInRoom } from "../services/user.service.ts";
+import { broadcastSubmissions } from "../realtime/roomSocket.ts";
+import { getSubmissions } from "../services/submissions.service.ts";
 
 export const createOptions = async (req: Request, res: Response) => {
   const parsed = optionsCreateBodySchema.safeParse(req.body);
@@ -58,6 +60,18 @@ export const createOptions = async (req: Request, res: Response) => {
       };
     })
   );
+
+  const submissions = await getSubmissions({ roomId });
+
+  const roomIdRef = { id: roomId };
+
+  broadcastSubmissions({
+    roomId: roomIdRef,
+    payload: {
+      roomId: roomIdRef,
+      submissions,
+    },
+  });
 
   return res.status(201).json(options);
 };
