@@ -6,14 +6,18 @@ import {
   SERVER_EVENTS,
 } from "../../types/realtime.ts";
 import { getRoomId, getUserId } from "../parsePayload.ts";
-import { addSocketToRoom, broadcastOccupancy } from "../roomSocket.ts";
+import {
+  addSocketToRoom,
+  broadcastOccupancy,
+  broadcastUsers,
+} from "../roomSocket.ts";
 import { sendError, send } from "../send.ts";
 import {
   INVALID_MESSAGE_FORMAT,
   ROOM_NOT_FOUND,
 } from "../../constants/errorMessages.ts";
 import { WebSocket } from "ws";
-import { getUserInRoom } from "../../services/user.service.ts";
+import { getUserInRoom, getUsersInRoom } from "../../services/user.service.ts";
 
 export const handleJoin = async ({
   socket,
@@ -141,5 +145,16 @@ export const handleJoin = async ({
     const occupancy = getOccupancy({ roomId, capacity });
 
     broadcastOccupancy({ roomId, payload: occupancy });
+
+    const users = await getUsersInRoom({ roomId: roomId.id });
+    const normalizedUsers = users.map(({ id, name }) => ({ id, name }));
+
+    broadcastUsers({
+      roomId,
+      payload: {
+        roomId,
+        users: normalizedUsers,
+      },
+    });
   }
 };

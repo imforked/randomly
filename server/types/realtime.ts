@@ -13,6 +13,7 @@ export enum SERVER_EVENTS {
   OCCUPANCY = "room:occupancy",
   FULL = "room:full",
   ERROR = "room:error",
+  USERS = "room:users",
 }
 
 export type RoomJoinPayload = {
@@ -48,6 +49,11 @@ export type RoomFullPayload = {
   activeCount: number;
 };
 
+export type RoomUsersPayload = {
+  roomId: RoomId;
+  users: Pick<User, "id" | "name">[];
+};
+
 export type Payload =
   | RoomJoinPayload
   | RoomLeavePayload
@@ -55,7 +61,8 @@ export type Payload =
   | RoomLeftPayload
   | RoomOccupancyPayload
   | RoomFullPayload
-  | RoomErrorPayload;
+  | RoomErrorPayload
+  | RoomUsersPayload;
 
 export type ClientPayload = {
   roomId: string;

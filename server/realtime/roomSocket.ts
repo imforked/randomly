@@ -1,5 +1,10 @@
 import { RoomConfig } from "../generated/prisma/client.ts";
-import { RoomId, RoomOccupancyPayload, SERVER_EVENTS } from "../types/realtime.ts";
+import {
+  RoomId,
+  RoomOccupancyPayload,
+  RoomUsersPayload,
+  SERVER_EVENTS,
+} from "../types/realtime.ts";
 import { send } from "./send.ts";
 import { getOccupancy } from "../services/presence.service.ts";
 import { WebSocket } from "ws";
@@ -38,6 +43,28 @@ export const broadcastOccupancy = ({
     send({
       socket: clientSocket,
       event: SERVER_EVENTS.OCCUPANCY,
+      payload,
+    });
+  }
+};
+
+export const broadcastUsers = ({
+  roomId,
+  payload,
+}: {
+  roomId: RoomId;
+  payload: RoomUsersPayload;
+}) => {
+  const socketsInRoom = roomSockets.get(roomId.id);
+
+  if (!socketsInRoom) {
+    return;
+  }
+
+  for (const clientSocket of socketsInRoom) {
+    send({
+      socket: clientSocket,
+      event: SERVER_EVENTS.USERS,
       payload,
     });
   }
