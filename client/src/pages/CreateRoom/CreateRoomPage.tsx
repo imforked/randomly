@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import {
   FlippingLetterPoolProvider,
   PooledFlippingTitle,
-} from "../components/FlippingLetterPool/FlippingLetterPool";
-import { StartRoomModal } from "../components/StartRoomModal";
+} from "src/components/FlippingLetterPool/FlippingLetterPool";
+import { StartRoomModal } from "src/components/StartRoomModal/StartRoomModal";
 import {
   OPTIONS_PER_GUEST_MAX as OPTIONS_MAX,
   OPTIONS_PER_GUEST_MIN as OPTIONS_MIN,
@@ -213,7 +213,7 @@ export function CreateRoomPage() {
       <StartRoomModal
         open={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        roomUrl={roomId ? `${API_BASE_URL}/${roomId}` : null}
+        roomUrl={roomId ? `${window.location.origin}/rooms/${roomId}` : null}
       />
     </main>
   );
