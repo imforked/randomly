@@ -1,6 +1,6 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { CreateRoomPage } from './pages/CreateRoomPage'
-import { LandingPage } from './pages/LandingPage'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { CreateRoomPage } from "./pages/CreateRoom/CreateRoomPage";
+import { LandingPage } from "./pages/Landing/LandingPage";
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Route path="/create" element={<CreateRoomPage />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
