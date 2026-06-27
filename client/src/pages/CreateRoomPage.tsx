@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   FlippingLetterPoolProvider,
   PooledFlippingTitle,
-} from "../components/FlippingLetterPool";
+} from "../components/FlippingLetterPool/FlippingLetterPool";
 import { StartRoomModal } from "../components/StartRoomModal";
 import {
   OPTIONS_PER_GUEST_MAX as OPTIONS_MAX,

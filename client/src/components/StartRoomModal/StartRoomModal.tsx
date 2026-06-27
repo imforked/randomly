@@ -4,9 +4,9 @@ import * as ReactQRCode from "react-qr-code";
 import {
   FlippingLetterPoolProvider,
   PooledFlippingTitle,
-} from "./FlippingLetterPool";
-import { usePrefersReducedMotion } from "../usePrefersReducedMotion";
-import { useAnimatedModal } from "../useAnimatedModal";
+} from "../FlippingLetterPool/FlippingLetterPool";
+import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
+import { useAnimatedModal } from "src/hooks/useAnimatedModal";
 import "./StartRoomModal.css";
 
 const SHARE_ROOM_FLIP_LINES = ["Share the Room"] as const;
