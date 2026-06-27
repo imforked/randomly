@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { type RoomConfig } from "src/api.types";
+import { type RoomConfig, type User } from "src/api.types";
+import { handleBadResponse } from "src/utils";
 
 export const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,16 +22,18 @@ export const Room = () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Room not found.");
-      }
-      if (response.status === 410) {
-        throw new Error("Room expired.");
-      }
+    handleBadResponse(response);
 
-      throw new Error("Something went wrong.");
-    }
+    return response.json();
+  };
+
+  const fetchUsersInRoom = async (roomId: string): Promise<User[]> => {
+    const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/users`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    handleBadResponse(response);
 
     return response.json();
   };
@@ -45,6 +48,13 @@ export const Room = () => {
     const fetchRoomData = async () => {
       try {
         const roomData = await fetchRoomConfig(roomId);
+        const users = await fetchUsersInRoom(roomId);
+
+        if (users.length >= roomData.size) {
+          setError("Room is full.");
+          setIsLoading(false);
+          return;
+        }
 
         setRoom(roomData);
         setIsLoading(false);
@@ -69,7 +79,7 @@ export const Room = () => {
           <h1>Loading...</h1>
         </div>
       ) : error ? (
-        <h1>An error occurred.</h1>
+        <h1>{error}</h1>
       ) : (
         <div>
           <h1>{room?.topic}</h1>
