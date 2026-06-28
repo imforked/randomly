@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { type RoomConfig, type User } from "src/api.types";
-import { getStoredUserId, handleBadResponse, setStoredUserId } from "src/utils";
+import { getStoredUserId, handleBadResponse } from "src/utils";
+import { NameEntryForm } from "src/components/NameEntryForm/NameEntryForm";
 import type { PageStatus } from "./Room.types";
 
 export const Room = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [room, setRoom] = useState<RoomConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pageStatus, setPageStatus] = useState<PageStatus>("loading");
@@ -43,7 +43,7 @@ export const Room = () => {
   useEffect(() => {
     if (!roomId) {
       setError("roomId is undefined.");
-      setIsLoading(false);
+      setPageStatus("error");
       return;
     }
 
@@ -57,28 +57,19 @@ export const Room = () => {
 
         if (!canHaveAccess) {
           setError("Room is full.");
-          setIsLoading(false);
           setPageStatus("error");
           return;
         }
 
-        if (!storedUserId) {
-          setIsLoading(false);
-          setPageStatus("nameEntry");
-          setRoom(roomData);
-          return;
-        }
-
         setRoom(roomData);
-        setPageStatus("inRoom");
-        setIsLoading(false);
+        setPageStatus(storedUserId ? "inRoom" : "nameEntry");
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
         } else {
           setError("Something went wrong.");
         }
-        setIsLoading(false);
+        setPageStatus("error");
         console.error(error);
       }
     };
@@ -86,19 +77,22 @@ export const Room = () => {
     fetchRoomData();
   }, [roomId]);
 
-  return (
-    <>
-      {isLoading ? (
-        <div>
-          <h1>Loading...</h1>
-        </div>
-      ) : error ? (
-        <h1>{error}</h1>
-      ) : (
-        <div>
-          <h1>{room?.topic}</h1>
-        </div>
-      )}
-    </>
-  );
+  const handleNameSubmit = (name: string) => {
+    // step 4: create the user, persist the returned id, then enter the room.
+    console.log("name submitted:", name);
+  };
+
+  if (pageStatus === "loading") {
+    return <h1>Loading...</h1>;
+  }
+
+  if (pageStatus === "error") {
+    return <h1>{error}</h1>;
+  }
+
+  if (pageStatus === "nameEntry") {
+    return <NameEntryForm onSubmit={handleNameSubmit} />;
+  }
+
+  return <h1>{room?.topic}</h1>;
 };

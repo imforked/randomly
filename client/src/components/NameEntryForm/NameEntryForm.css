@@ -1,0 +1,32 @@
+.name-entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.name-entry-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.name-entry-form__prompt {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-fg);
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+.name-entry-form__submit {
+  margin-top: 0.25rem;
+}
+
+.name-entry-form__submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
