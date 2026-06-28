@@ -3,6 +3,9 @@ export const handleBadResponse = (apiResponse: Response) => {
     if (apiResponse.status === 404) {
       throw new Error("Room not found.");
     }
+    if (apiResponse.status === 409) {
+      throw new Error("Room is full.");
+    }
     if (apiResponse.status === 410) {
       throw new Error("Room expired.");
     }

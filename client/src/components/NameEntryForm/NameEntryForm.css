@@ -30,3 +30,24 @@
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+.name-entry-form__input--error {
+  border-color: var(--color-form-error);
+}
+
+.name-entry-form__input--error:hover {
+  border-color: var(--color-form-error);
+}
+
+.name-entry-form__input--error:focus {
+  border-color: var(--color-form-error);
+  box-shadow: 0 0 0 3px var(--color-form-error-ring);
+}
+
+.name-entry-form__error {
+  margin: 0;
+  font-size: var(--text-caption);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--color-form-error);
+}

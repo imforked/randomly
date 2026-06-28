@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { type RoomConfig, type User } from "src/api.types";
-import { getStoredUserId, handleBadResponse } from "src/utils";
+import { getStoredUserId, handleBadResponse, setStoredUserId } from "src/utils";
 import { NameEntryForm } from "src/components/NameEntryForm/NameEntryForm";
 import type { PageStatus } from "./Room.types";
 
@@ -9,6 +9,8 @@ export const Room = () => {
   const [room, setRoom] = useState<RoomConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pageStatus, setPageStatus] = useState<PageStatus>("loading");
+  const [isSubmittingName, setIsSubmittingName] = useState(false);
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -77,9 +79,46 @@ export const Room = () => {
     fetchRoomData();
   }, [roomId]);
 
-  const handleNameSubmit = (name: string) => {
-    // step 4: create the user, persist the returned id, then enter the room.
-    console.log("name submitted:", name);
+  const handleNameSubmit = async (name: string) => {
+    setIsSubmittingName(true);
+    setFormErrorMessage(null);
+
+    if (!roomId) {
+      setIsSubmittingName(false);
+      throw new Error("roomId is undefined.");
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/rooms/${roomId}/users`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        }
+      );
+
+      handleBadResponse(response);
+
+      const user = await response.json();
+
+      if (!user.id) {
+        setFormErrorMessage("Something went wrong.");
+        return;
+      }
+
+      setStoredUserId({ roomId, userId: user.id });
+      setPageStatus("inRoom");
+    } catch (error) {
+      if (error instanceof Error) {
+        setFormErrorMessage(error.message);
+      } else {
+        setFormErrorMessage("Something went wrong.");
+      }
+      console.error(error);
+    } finally {
+      setIsSubmittingName(false);
+    }
   };
 
   if (pageStatus === "loading") {
@@ -91,7 +130,14 @@ export const Room = () => {
   }
 
   if (pageStatus === "nameEntry") {
-    return <NameEntryForm onSubmit={handleNameSubmit} />;
+    return (
+      <NameEntryForm
+        onSubmit={handleNameSubmit}
+        isSubmitting={isSubmittingName}
+        errorMessage={formErrorMessage}
+        onErrorDismiss={() => setFormErrorMessage(null)}
+      />
+    );
   }
 
   return <h1>{room?.topic}</h1>;

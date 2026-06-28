@@ -11,14 +11,24 @@ const NAME_MAX_LENGTH = 50;
 
 type NameEntryFormProps = {
   onSubmit: (name: string) => void;
+  isSubmitting: boolean;
+  errorMessage: string | null;
+  onErrorDismiss?: () => void;
 };
 
-export function NameEntryForm({ onSubmit }: NameEntryFormProps) {
+export function NameEntryForm({
+  onSubmit,
+  isSubmitting,
+  errorMessage,
+  onErrorDismiss,
+}: NameEntryFormProps) {
   const nameFieldId = useId();
+  const errorId = useId();
   const [name, setName] = useState("");
 
   const trimmedName = name.trim();
-  const canSubmit = trimmedName.length > 0;
+  const canSubmit = trimmedName.length > 0 && !isSubmitting;
+  const hasError = errorMessage !== null;
 
   return (
     <main className="shell shell-landing">
@@ -26,7 +36,7 @@ export function NameEntryForm({ onSubmit }: NameEntryFormProps) {
         <FlippingLetterPoolProvider lines={NAME_ENTRY_FLIP_LINES}>
           <form
             className="name-entry-form"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!canSubmit) return;
               onSubmit(trimmedName);
@@ -42,13 +52,33 @@ export function NameEntryForm({ onSubmit }: NameEntryFormProps) {
               />
               <input
                 type="text"
-                className="field-input"
+                className={[
+                  "field-input",
+                  hasError ? "name-entry-form__input--error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (hasError) onErrorDismiss?.();
+                }}
                 autoComplete="off"
                 aria-labelledby={nameFieldId}
+                aria-invalid={hasError}
+                aria-describedby={hasError ? errorId : undefined}
+                disabled={isSubmitting}
                 maxLength={NAME_MAX_LENGTH}
               />
+              {hasError ? (
+                <p
+                  id={errorId}
+                  className="name-entry-form__error"
+                  role="alert"
+                >
+                  {errorMessage}
+                </p>
+              ) : null}
             </div>
 
             <button
