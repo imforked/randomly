@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { type RoomConfig, type User } from "src/api.types";
-import { handleBadResponse } from "src/utils";
+import { getStoredUserId, handleBadResponse, setStoredUserId } from "src/utils";
+import type { PageStatus } from "./Room.types";
 
 export const Room = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [room, setRoom] = useState<RoomConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pageStatus, setPageStatus] = useState<PageStatus>("loading");
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -49,14 +51,26 @@ export const Room = () => {
       try {
         const roomData = await fetchRoomConfig(roomId);
         const users = await fetchUsersInRoom(roomId);
+        const storedUserId = getStoredUserId({ roomId });
 
-        if (users.length >= roomData.size) {
+        const canHaveAccess = users.length < roomData.size || storedUserId;
+
+        if (!canHaveAccess) {
           setError("Room is full.");
           setIsLoading(false);
+          setPageStatus("error");
+          return;
+        }
+
+        if (!storedUserId) {
+          setIsLoading(false);
+          setPageStatus("nameEntry");
+          setRoom(roomData);
           return;
         }
 
         setRoom(roomData);
+        setPageStatus("inRoom");
         setIsLoading(false);
       } catch (error) {
         if (error instanceof Error) {
