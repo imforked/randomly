@@ -78,12 +78,6 @@ export function CreateRoomPage() {
     setShareModalOpen(true);
   }, [optionsPerGuest, roomSize, topic]);
 
-  useEffect(() => {
-    if (roomId) {
-      setShareModalOpen(true);
-    }
-  }, [roomId]);
-
   return (
     <main className="shell shell-landing">
       <div className="stack-lg">

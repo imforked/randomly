@@ -77,7 +77,7 @@ export const Room = () => {
     };
 
     fetchRoomData();
-  }, [roomId]);
+  }, [roomId, fetchRoomConfig, fetchUsersInRoom]);
 
   const handleNameSubmit = async (name: string) => {
     setIsSubmittingName(true);
