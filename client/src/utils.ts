@@ -30,3 +30,16 @@ export const setStoredUserId = ({
 export const getStoredUserId = ({ roomId }: { roomId: string }) => {
   return localStorage.getItem(USER_ID_COOKIE_KEY({ roomId }));
 };
+
+export const getWebSocketUrl = (): string => {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  if (!apiBaseUrl) {
+    throw new Error("VITE_API_BASE_URL is undefined.");
+  }
+
+  const parsed = new URL(apiBaseUrl);
+  const wsProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+
+  return `${wsProtocol}//${parsed.host}`;
+};
