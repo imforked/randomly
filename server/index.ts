@@ -4,11 +4,10 @@ import { errorHandler } from "./middleware/index.ts";
 import { PATH_PREFIX, roomsRouter } from "./routes/rooms.ts";
 import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
+import { ALLOWED_ORIGINS } from "./constants/allowedOrigins.ts";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const ALLOWED_ORIGINS =
-  process.env.ALLOWED_ORIGINS?.split(",").map((origin) => origin.trim()) ?? [];
 
 app.use(
   cors({

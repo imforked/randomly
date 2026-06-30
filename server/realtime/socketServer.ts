@@ -1,17 +1,24 @@
 import { Server } from "node:http";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, VerifyClientCallbackSync } from "ws";
 import { REALTIME_ERROR_CODES, CLIENT_EVENTS } from "../types/realtime.ts";
 import { sendError } from "./send.ts";
 import { getRoomId, getUserId } from "./parsePayload.ts";
 import { handleJoin, handleDisconnect, handleLeave } from "./handlers/index.ts";
 import { INVALID_MESSAGE_FORMAT } from "../constants/errorMessages.ts";
+import { ALLOWED_ORIGINS } from "../constants/allowedOrigins.ts";
 
 const connections = new Map();
 
 export const attachSocketServer = (server: Server) => {
-  const webSocketServer = new WebSocketServer({ server });
+  const verifyOrigin: VerifyClientCallbackSync = (info) =>
+    ALLOWED_ORIGINS.includes(info.origin);
 
-  webSocketServer.addListener("connection", (socket) => {
+  const webSocketServer = new WebSocketServer({
+    server,
+    verifyClient: verifyOrigin,
+  });
+
+  webSocketServer.addListener("connection", (socket, request) => {
     const socketId = crypto.randomUUID();
     connections.set(socketId, socket);
 
