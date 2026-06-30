@@ -7,11 +7,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
-
 COPY . .
 
+RUN chmod +x docker-entrypoint.sh
 RUN npx prisma generate
 
 ENV NODE_ENV=production
