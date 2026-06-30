@@ -6,11 +6,13 @@ import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
+const ALLOWED_ORIGINS =
+  process.env.ALLOWED_ORIGINS?.split(",").map((origin) => origin.trim()) ?? [];
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://www.randomlyapp.com"],
+    origin: ALLOWED_ORIGINS,
   })
 );
 
