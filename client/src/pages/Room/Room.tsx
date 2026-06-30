@@ -16,32 +16,6 @@ export const Room = () => {
 
   const { roomId } = useParams();
 
-  const fetchRoomConfig = async (roomId: string): Promise<RoomConfig> => {
-    if (!roomId) {
-      throw new Error("roomId is undefined.");
-    }
-
-    const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    handleBadResponse(response);
-
-    return response.json();
-  };
-
-  const fetchUsersInRoom = async (roomId: string): Promise<User[]> => {
-    const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/users`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    handleBadResponse(response);
-
-    return response.json();
-  };
-
   useEffect(() => {
     if (!roomId) {
       setError("roomId is undefined.");
@@ -49,10 +23,35 @@ export const Room = () => {
       return;
     }
 
+    const fetchRoomConfig = async (): Promise<RoomConfig> => {
+      const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      handleBadResponse(response);
+
+      return response.json();
+    };
+
+    const fetchUsersInRoom = async (): Promise<User[]> => {
+      const response = await fetch(
+        `${API_BASE_URL}/api/rooms/${roomId}/users`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      handleBadResponse(response);
+
+      return response.json();
+    };
+
     const fetchRoomData = async () => {
       try {
-        const roomData = await fetchRoomConfig(roomId);
-        const users = await fetchUsersInRoom(roomId);
+        const roomData = await fetchRoomConfig();
+        const users = await fetchUsersInRoom();
         const storedUserId = getStoredUserId({ roomId });
 
         const canHaveAccess = users.length < roomData.size || storedUserId;
@@ -77,7 +76,7 @@ export const Room = () => {
     };
 
     fetchRoomData();
-  }, [roomId, fetchRoomConfig, fetchUsersInRoom]);
+  }, [roomId, API_BASE_URL]);
 
   const handleNameSubmit = async (name: string) => {
     setIsSubmittingName(true);
