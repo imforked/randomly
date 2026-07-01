@@ -10,13 +10,11 @@ import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
 import "./LoadingScreen.css";
 
 type LoadingScreenProps = {
-  text?: string;
   visible?: boolean;
   onExitComplete?: () => void;
 };
 
 export function LoadingScreen({
-  text = "Loading...",
   visible = true,
   onExitComplete,
 }: LoadingScreenProps) {
@@ -73,7 +71,8 @@ export function LoadingScreen({
     >
       <FlippingText
         as="h1"
-        text={text}
+        text="Loading"
+        staticSuffix="..."
         className="guide-prompt loading-screen__text"
         startImmediately
       />

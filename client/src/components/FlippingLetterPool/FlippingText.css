@@ -10,6 +10,11 @@
   max-width: 100%;
 }
 
+.flip-static-suffix {
+  display: inline;
+  vertical-align: baseline;
+}
+
 /*
  * Regular spaces as FlipGlyph collapse to no width (inline-block + flipping faces).
  * One NBSP per source space keeps phrase boundaries visible.

@@ -83,6 +83,8 @@ export type FlippingTextTag = "h1" | "h2" | "h3" | "p" | "span" | "div";
 export type FlippingTextProps = {
   /** Full string read by assistive tech and used for the animation */
   text: string;
+  /** Rendered after the animated text without flipping (e.g. "..." on "Loading") */
+  staticSuffix?: string;
   /** Root element — use `h1` / `h2` / `h3` + `guide-prompt` for guidance prompts */
   as?: FlippingTextTag;
   className?: string;
@@ -98,6 +100,7 @@ export type FlippingTextProps = {
  */
 export function FlippingText({
   text,
+  staticSuffix = "",
   as: Tag = "span",
   className,
   id,
@@ -105,6 +108,7 @@ export function FlippingText({
 }: FlippingTextProps) {
   const reducedMotion = usePrefersReducedMotion();
   const instanceKey = useId();
+  const announcedText = `${text}${staticSuffix}`;
 
   const timings = useMemo(
     () =>
@@ -117,7 +121,7 @@ export function FlippingText({
   );
 
   if (reducedMotion) {
-    return createElement(Tag, { className, id }, text);
+    return createElement(Tag, { className, id }, announcedText);
   }
 
   return createElement(
@@ -127,7 +131,7 @@ export function FlippingText({
       id,
     },
     <>
-      <span className="sr-only">{text}</span>
+      <span className="sr-only">{announcedText}</span>
       <span className="flip-title" aria-hidden="true">
         {renderFlipTitleWords(text, (ch, i, key) => {
           const { delay, duration } = timings[i]!;
@@ -141,6 +145,9 @@ export function FlippingText({
             />
           );
         })}
+        {staticSuffix ? (
+          <span className="flip-static-suffix">{staticSuffix}</span>
+        ) : null}
       </span>
     </>
   );
