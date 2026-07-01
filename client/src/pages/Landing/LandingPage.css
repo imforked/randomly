@@ -1,0 +1,12 @@
+.landing-page__credit-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.landing-page__credit-link:hover {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
