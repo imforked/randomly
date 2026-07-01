@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import "./FlippingText.css";
+import { renderFlipTitleWords } from "src/components/FlippingLetterPool/renderFlipTitleWords";
 import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
 
 const GAP_MS_MIN = 1500;
@@ -275,7 +276,6 @@ export function PooledFlippingTitle({
   }
 
   const { channels, onFlipEnd } = ctx;
-  const letters = [...text];
 
   return createElement(
     Tag,
@@ -286,15 +286,7 @@ export function PooledFlippingTitle({
     <>
       <span className="sr-only">{text}</span>
       <span className="flip-title" aria-hidden="true">
-        {letters.map((ch, i) => {
-          if (ch === " ") {
-            return (
-              <span key={`${i}-space`} className="flip-space">
-                {"\u00A0"}
-              </span>
-            );
-          }
-
+        {renderFlipTitleWords(text, (ch, i, key) => {
           for (const c of [0, 1, 2] as const) {
             const { active, animNonce } = channels[c];
             const isActive =
@@ -302,7 +294,7 @@ export function PooledFlippingTitle({
             if (isActive) {
               return (
                 <FlipGlyphOnce
-                  key={`${c}-${i}-${ch}-active`}
+                  key={`${c}-${key}-active`}
                   lower={ch.toLowerCase()}
                   upper={ch.toUpperCase()}
                   animKey={animNonce}
@@ -313,10 +305,7 @@ export function PooledFlippingTitle({
           }
 
           return (
-            <span
-              key={`${i}-${ch}`}
-              className="flip-letter flip-letter--static"
-            >
+            <span key={key} className="flip-letter flip-letter--static">
               {ch.toLowerCase()}
             </span>
           );

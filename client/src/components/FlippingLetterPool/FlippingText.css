@@ -1,6 +1,13 @@
 .flip-title {
-  display: inline;
-  white-space: pre;
+  display: block;
+  white-space: normal;
+}
+
+.flip-word {
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: baseline;
+  max-width: 100%;
 }
 
 /*

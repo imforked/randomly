@@ -1,5 +1,6 @@
 import { createElement, useId, useMemo, type CSSProperties } from "react";
 import "./FlippingText.css";
+import { renderFlipTitleWords } from "src/components/FlippingLetterPool/renderFlipTitleWords";
 import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
 
 /** Stable 32-bit hash for seeding (per-instance id + letter index). */
@@ -119,8 +120,6 @@ export function FlippingText({
     return createElement(Tag, { className, id }, text);
   }
 
-  const letters = [...text];
-
   return createElement(
     Tag,
     {
@@ -130,18 +129,11 @@ export function FlippingText({
     <>
       <span className="sr-only">{text}</span>
       <span className="flip-title" aria-hidden="true">
-        {letters.map((ch, i) => {
-          if (ch === " ") {
-            return (
-              <span key={`${i}-space`} className="flip-space">
-                {"\u00A0"}
-              </span>
-            );
-          }
+        {renderFlipTitleWords(text, (ch, i, key) => {
           const { delay, duration } = timings[i]!;
           return (
             <FlipGlyph
-              key={`${i}-${ch}`}
+              key={key}
               lower={ch.toLowerCase()}
               upper={ch.toUpperCase()}
               delay={delay}

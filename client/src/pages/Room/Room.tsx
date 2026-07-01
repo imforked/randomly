@@ -1,8 +1,19 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { type RoomConfig, type User } from "src/api.types";
-import { getStoredUserId, handleBadResponse, setStoredUserId } from "src/utils";
+import {
+  fetchRoomSubmissions,
+  submitRoomOptions,
+} from "src/api/roomExperienceApi";
+import { RoomExperience } from "src/components/RoomExperience/RoomExperience";
 import { NameEntryForm } from "src/components/NameEntryForm/NameEntryForm";
+import { useRoomSocket } from "src/hooks/useRoomSocket";
+import {
+  clearStoredUserId,
+  getStoredUserId,
+  handleBadResponse,
+  setStoredUserId,
+} from "src/utils";
 import type { PageStatus } from "./Room.types";
 
 export const Room = () => {
@@ -11,10 +22,32 @@ export const Room = () => {
   const [pageStatus, setPageStatus] = useState<PageStatus>("loading");
   const [isSubmittingName, setIsSubmittingName] = useState(false);
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isSubmittingOptions, setIsSubmittingOptions] = useState(false);
+  const [optionsErrorMessage, setOptionsErrorMessage] = useState<string | null>(
+    null
+  );
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { roomId } = useParams();
+
+  const handleInvalidUser = useCallback(() => {
+    if (!roomId) {
+      return;
+    }
+
+    clearStoredUserId({ roomId });
+    setUserId(null);
+    setPageStatus("nameEntry");
+  }, [roomId]);
+
+  const { users, submissions, setSubmissions } = useRoomSocket({
+    roomId,
+    userId,
+    enabled: pageStatus === "inRoom",
+    onInvalidUser: handleInvalidUser,
+  });
 
   useEffect(() => {
     if (!roomId) {
@@ -51,10 +84,11 @@ export const Room = () => {
     const fetchRoomData = async () => {
       try {
         const roomData = await fetchRoomConfig();
-        const users = await fetchUsersInRoom();
+        const usersInRoom = await fetchUsersInRoom();
         const storedUserId = getStoredUserId({ roomId });
 
-        const canHaveAccess = users.length < roomData.size || storedUserId;
+        const canHaveAccess =
+          usersInRoom.length < roomData.size || storedUserId;
 
         if (!canHaveAccess) {
           setError("Room is full.");
@@ -64,6 +98,7 @@ export const Room = () => {
 
         setRoom(roomData);
         setPageStatus(storedUserId ? "inRoom" : "nameEntry");
+        setUserId(storedUserId);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -77,6 +112,23 @@ export const Room = () => {
 
     fetchRoomData();
   }, [roomId, API_BASE_URL]);
+
+  useEffect(() => {
+    if (pageStatus !== "inRoom" || !roomId) {
+      return;
+    }
+
+    const loadSubmissions = async () => {
+      try {
+        const initialSubmissions = await fetchRoomSubmissions(roomId);
+        setSubmissions(initialSubmissions);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    void loadSubmissions();
+  }, [pageStatus, roomId, setSubmissions]);
 
   const handleNameSubmit = async (name: string) => {
     setIsSubmittingName(true);
@@ -108,6 +160,7 @@ export const Room = () => {
 
       setStoredUserId({ roomId, userId: user.id });
       setPageStatus("inRoom");
+      setUserId(user.id);
     } catch (error) {
       if (error instanceof Error) {
         setFormErrorMessage(error.message);
@@ -117,6 +170,29 @@ export const Room = () => {
       console.error(error);
     } finally {
       setIsSubmittingName(false);
+    }
+  };
+
+  const handleSubmitOptions = async (options: string[]) => {
+    if (!roomId || !userId) {
+      return;
+    }
+
+    setIsSubmittingOptions(true);
+    setOptionsErrorMessage(null);
+
+    try {
+      await submitRoomOptions({ roomId, userId, options });
+    } catch (error) {
+      if (error instanceof Error) {
+        setOptionsErrorMessage(error.message);
+      } else {
+        setOptionsErrorMessage("Something went wrong.");
+      }
+      console.error(error);
+      throw error;
+    } finally {
+      setIsSubmittingOptions(false);
     }
   };
 
@@ -139,5 +215,20 @@ export const Room = () => {
     );
   }
 
-  return <h1>{room?.topic}</h1>;
+  if (!room || !userId) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <RoomExperience
+      room={room}
+      userId={userId}
+      users={users}
+      submissions={submissions}
+      onSubmitOptions={handleSubmitOptions}
+      isSubmittingOptions={isSubmittingOptions}
+      optionsErrorMessage={optionsErrorMessage}
+      onOptionsErrorDismiss={() => setOptionsErrorMessage(null)}
+    />
+  );
 };

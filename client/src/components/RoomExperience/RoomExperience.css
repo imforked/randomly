@@ -1,0 +1,94 @@
+.room-experience {
+  width: 100%;
+}
+
+.room-experience__topic {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-fg);
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+.room-experience__options-btn {
+  margin-top: 0;
+}
+
+.room-experience__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.room-experience__section-title {
+  margin: 0;
+  font-size: var(--text-body-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-fg);
+}
+
+.room-experience__empty {
+  margin: 0;
+}
+
+.room-experience__guest-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.room-experience__guest {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  min-width: 0;
+}
+
+.room-experience__guest:not(:last-child) {
+  border-bottom: 1px solid var(--color-border-faint);
+}
+
+.room-experience__guest-name {
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--color-fg);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-experience__guest-status {
+  flex-shrink: 0;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-fg-tertiary);
+}
+
+.room-experience__guest-status--submitted {
+  color: var(--color-fg-secondary);
+}
+
+.room-experience__submitted-message {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}

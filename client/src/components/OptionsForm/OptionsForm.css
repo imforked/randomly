@@ -1,0 +1,112 @@
+.options-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.options-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.options-form__prompt {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-fg);
+  max-width: 100%;
+}
+
+.options-form__inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  --options-field-height: 48px;
+}
+
+.options-form__input-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: var(--options-field-height);
+}
+
+.options-form__input-row .field-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--options-field-height);
+  min-height: var(--options-field-height);
+  padding-block: 0;
+}
+
+.options-form__remove-btn {
+  flex: 0 0 auto;
+  width: var(--options-field-height);
+  height: var(--options-field-height);
+  min-height: var(--options-field-height);
+  max-width: none;
+  padding: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+}
+
+.options-form__remove-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.options-form__add-btn {
+  width: 100%;
+  max-width: 100%;
+  height: var(--options-field-height);
+  min-height: var(--options-field-height);
+  padding: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.options-form__add-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.options-form__submit {
+  margin-top: 0.25rem;
+}
+
+.options-form__submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.options-form__input--error {
+  border-color: var(--color-form-error);
+}
+
+.options-form__input--error:hover {
+  border-color: var(--color-form-error);
+}
+
+.options-form__input--error:focus {
+  border-color: var(--color-form-error);
+  box-shadow: 0 0 0 3px var(--color-form-error-ring);
+}
+
+.options-form__error {
+  margin: 0;
+  font-size: var(--text-caption);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--color-form-error);
+}

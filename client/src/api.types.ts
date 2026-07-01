@@ -12,3 +12,11 @@ export type User = {
   roomId: string;
   createdAt: Date;
 };
+
+export type RoomUser = Pick<User, "id" | "name">;
+
+export type RoomSubmission = {
+  id: string;
+  name: string;
+  hasSubmitted: boolean;
+};

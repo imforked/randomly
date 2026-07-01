@@ -1,0 +1,36 @@
+@import "../../modal-shell.css";
+
+.btn.modal-close-btn {
+  position: absolute;
+  top: 0.85rem;
+  right: 20px;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.options-modal__panel {
+  padding-top: 1.25rem;
+}
+
+.options-modal__panel .options-form__prompt {
+  padding-right: 2.75rem;
+}
+
+.options-modal__panel .options-form__inputs {
+  margin-top: 1.25rem;
+}

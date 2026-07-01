@@ -31,6 +31,10 @@ export const getStoredUserId = ({ roomId }: { roomId: string }) => {
   return localStorage.getItem(USER_ID_COOKIE_KEY({ roomId }));
 };
 
+export const clearStoredUserId = ({ roomId }: { roomId: string }) => {
+  localStorage.removeItem(USER_ID_COOKIE_KEY({ roomId }));
+};
+
 export const getWebSocketUrl = (): string => {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
