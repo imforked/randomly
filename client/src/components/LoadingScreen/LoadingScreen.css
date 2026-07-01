@@ -1,0 +1,18 @@
+.loading-screen {
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.loading-screen--visible {
+  opacity: 1;
+}
+
+.loading-screen--reduced-motion {
+  transition-duration: 0.01ms;
+}
+
+.loading-screen__text {
+  width: 100%;
+}

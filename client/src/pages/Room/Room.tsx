@@ -5,8 +5,10 @@ import {
   fetchRoomSubmissions,
   submitRoomOptions,
 } from "src/api/roomExperienceApi";
+import { LoadingScreen } from "src/components/LoadingScreen/LoadingScreen";
 import { RoomExperience } from "src/components/RoomExperience/RoomExperience";
 import { NameEntryForm } from "src/components/NameEntryForm/NameEntryForm";
+import { useMinimumDuration } from "src/hooks/useMinimumDuration";
 import { useRoomSocket } from "src/hooks/useRoomSocket";
 import {
   clearStoredUserId,
@@ -16,10 +18,14 @@ import {
 } from "src/utils";
 import type { PageStatus } from "./Room.types";
 
+const LOADING_MIN_MS = 3000;
+
 export const Room = () => {
   const [room, setRoom] = useState<RoomConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pageStatus, setPageStatus] = useState<PageStatus>("loading");
+  const [showInitialLoading, setShowInitialLoading] = useState(true);
+  const [initialLoadingVisible, setInitialLoadingVisible] = useState(true);
   const [isSubmittingName, setIsSubmittingName] = useState(false);
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -31,6 +37,15 @@ export const Room = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { roomId } = useParams();
+  const waitForMinimumLoading = useMinimumDuration(LOADING_MIN_MS);
+
+  const finishInitialLoading = useCallback(() => {
+    setInitialLoadingVisible(false);
+  }, []);
+
+  const handleInitialLoadingExit = useCallback(() => {
+    setShowInitialLoading(false);
+  }, []);
 
   const handleInvalidUser = useCallback(() => {
     if (!roomId) {
@@ -51,8 +66,12 @@ export const Room = () => {
 
   useEffect(() => {
     if (!roomId) {
-      setError("roomId is undefined.");
-      setPageStatus("error");
+      void (async () => {
+        await waitForMinimumLoading();
+        setError("roomId is undefined.");
+        setPageStatus("error");
+        finishInitialLoading();
+      })();
       return;
     }
 
@@ -91,27 +110,33 @@ export const Room = () => {
           usersInRoom.length < roomData.size || storedUserId;
 
         if (!canHaveAccess) {
+          await waitForMinimumLoading();
           setError("Room is full.");
           setPageStatus("error");
+          finishInitialLoading();
           return;
         }
 
+        await waitForMinimumLoading();
         setRoom(roomData);
         setPageStatus(storedUserId ? "inRoom" : "nameEntry");
         setUserId(storedUserId);
+        finishInitialLoading();
       } catch (error) {
+        await waitForMinimumLoading();
         if (error instanceof Error) {
           setError(error.message);
         } else {
           setError("Something went wrong.");
         }
         setPageStatus("error");
+        finishInitialLoading();
         console.error(error);
       }
     };
 
     fetchRoomData();
-  }, [roomId, API_BASE_URL]);
+  }, [roomId, API_BASE_URL, waitForMinimumLoading, finishInitialLoading]);
 
   useEffect(() => {
     if (pageStatus !== "inRoom" || !roomId) {
@@ -196,8 +221,13 @@ export const Room = () => {
     }
   };
 
-  if (pageStatus === "loading") {
-    return <h1>Loading...</h1>;
+  if (showInitialLoading) {
+    return (
+      <LoadingScreen
+        visible={initialLoadingVisible}
+        onExitComplete={handleInitialLoadingExit}
+      />
+    );
   }
 
   if (pageStatus === "error") {
@@ -216,7 +246,7 @@ export const Room = () => {
   }
 
   if (!room || !userId) {
-    return <h1>Loading...</h1>;
+    return <LoadingScreen />;
   }
 
   return (
