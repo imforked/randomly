@@ -33,6 +33,11 @@
   color: var(--color-fg);
 }
 
+.room-experience__section-note {
+  font-weight: 500;
+  color: var(--color-fg-secondary);
+}
+
 .room-experience__empty {
   margin: 0;
 }

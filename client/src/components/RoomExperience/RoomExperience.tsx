@@ -34,6 +34,19 @@ export function RoomExperience({
     (submission) => submission.id === userId && submission.hasSubmitted
   );
 
+  const othersWaitingToJoinCount = useMemo(() => {
+    return Math.max(0, room.size - users.length);
+  }, [room.size, users.length]);
+
+  const waitingForOthersLabel = useMemo(() => {
+    if (othersWaitingToJoinCount === 0) {
+      return null;
+    }
+
+    const noun = othersWaitingToJoinCount === 1 ? "other" : "others";
+    return `(waiting for ${othersWaitingToJoinCount} ${noun})`;
+  }, [othersWaitingToJoinCount]);
+
   const getSubmissionStatus = (id: string) => {
     const submission = submissions.find((entry) => entry.id === id);
     return submission?.hasSubmitted ? "Submitted" : "waiting for submission";
@@ -75,8 +88,23 @@ export function RoomExperience({
         )}
 
         {room.size > 1 ? (
-          <section className="room-experience__section" aria-label="Guests">
-            <h2 className="room-experience__section-title">who&apos;s here</h2>
+          <section
+            className="room-experience__section"
+            aria-label={
+              waitingForOthersLabel
+                ? `Guests ${waitingForOthersLabel}`
+                : "Guests"
+            }
+          >
+            <h2 className="room-experience__section-title">
+              who&apos;s here
+              {waitingForOthersLabel ? (
+                <span className="room-experience__section-note">
+                  {" "}
+                  {waitingForOthersLabel}
+                </span>
+              ) : null}
+            </h2>
             {users.length === 0 ? (
               <p className="room-experience__empty text-body">No guests yet.</p>
             ) : (
