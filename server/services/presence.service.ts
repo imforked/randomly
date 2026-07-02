@@ -8,8 +8,7 @@ const socketIndex = new Map<
 >();
 
 type JoinResult =
-  | { ok: true }
-  | { ok: false; reason: "ALREADY_CONNECTED" }
+  | { ok: true; reconnected?: boolean }
   | { ok: false; reason: "FULL" };
 
 type LeaveByPayloadResult =
@@ -34,23 +33,24 @@ export const tryJoin = ({
 }): JoinResult => {
   let guestList = rooms.get(roomId.id);
 
-  const socketForUser = guestList?.get(userId);
+  const previousSocketId = guestList?.get(userId);
 
-  if (socketForUser) {
-    return { ok: false, reason: "ALREADY_CONNECTED" };
-  }
-
-  if (!socketForUser) {
-    const headCount = guestList ? guestList.size : 0;
-
-    if (headCount >= capacity) {
-      return { ok: false, reason: "FULL" };
-    }
+  if (previousSocketId) {
+    socketIndex.delete(previousSocketId);
+    guestList.set(userId, socketId);
+    socketIndex.set(socketId, { roomId, userId });
+    return { ok: true, reconnected: true };
   }
 
   if (!guestList) {
     guestList = new Map();
     rooms.set(roomId.id, guestList);
+  }
+
+  const headCount = guestList.size;
+
+  if (headCount >= capacity) {
+    return { ok: false, reason: "FULL" };
   }
 
   guestList.set(userId, socketId);

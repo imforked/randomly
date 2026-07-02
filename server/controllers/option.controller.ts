@@ -70,9 +70,14 @@ export const createOptions = async (req: Request, res: Response) => {
     })
   );
 
-  const submissions = await getSubmissions({ roomId });
-
   const roomIdRef = { id: roomId };
+
+  const selection = await tryCompleteRoomSelection({
+    roomId,
+    roomSize: room.size,
+  });
+
+  const submissions = await getSubmissions({ roomId });
 
   broadcastSubmissions({
     roomId: roomIdRef,
@@ -80,11 +85,6 @@ export const createOptions = async (req: Request, res: Response) => {
       roomId: roomIdRef,
       submissions,
     },
-  });
-
-  const selection = await tryCompleteRoomSelection({
-    roomId,
-    roomSize: room.size,
   });
 
   if (selection) {

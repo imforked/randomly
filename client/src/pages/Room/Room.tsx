@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { type RandomOption, type RoomConfig, type User } from "src/api.types";
+import { type RandomOption, type RoomConfig, type RoomSubmission, type User } from "src/api.types";
 import {
   fetchRandomOption,
   fetchRoomSubmissions,
@@ -40,6 +40,12 @@ export const Room = () => {
     null
   );
 
+  const selectedOptionRef = useRef<RandomOption | null>(null);
+  const appliedSelectionIdRef = useRef<string | null>(null);
+  const roomRef = useRef<RoomConfig | null>(null);
+  roomRef.current = room;
+  selectedOptionRef.current = selectedOption;
+
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { roomId } = useParams();
@@ -65,45 +71,62 @@ export const Room = () => {
   }, [roomId]);
 
   const applySelection = useCallback((option: RandomOption) => {
-    let isNewSelection = false;
-
-    setSelectedOption((current) => {
-      if (current?.id === option.id) {
-        return current;
-      }
-
-      isNewSelection = true;
-      return option;
-    });
-
-    if (isNewSelection) {
-      setSelectionEpoch((epoch) => epoch + 1);
+    if (appliedSelectionIdRef.current === option.id) {
+      return;
     }
-  }, []);
 
-  const syncRoomSelection = useCallback((optionId: string) => {
+    appliedSelectionIdRef.current = option.id;
+    selectedOptionRef.current = option;
+    setSelectedOption(option);
+    setSelectionEpoch((epoch) => epoch + 1);
     setRoom((currentRoom) =>
-      currentRoom?.selectedOptionId === optionId
+      currentRoom?.selectedOptionId === option.id
         ? currentRoom
         : currentRoom
-          ? { ...currentRoom, selectedOptionId: optionId }
+          ? { ...currentRoom, selectedOptionId: option.id }
           : currentRoom
     );
   }, []);
 
   const resolveSelection = useCallback(async () => {
-    if (!roomId || !room || selectedOption) {
+    const currentRoom = roomRef.current;
+
+    if (!roomId || !currentRoom || selectedOptionRef.current) {
       return;
     }
 
     try {
       const option = await fetchRandomOption(roomId);
       applySelection(option);
-      syncRoomSelection(option.id);
     } catch (fetchError) {
       console.error(fetchError);
     }
-  }, [roomId, room, selectedOption, applySelection, syncRoomSelection]);
+  }, [roomId, applySelection]);
+
+  const resolveSelectionRef = useRef(resolveSelection);
+  resolveSelectionRef.current = resolveSelection;
+
+  const handleSubmissionsUpdate = useCallback(
+    (nextSubmissions: RoomSubmission[]) => {
+      const currentRoom = roomRef.current;
+
+      if (!currentRoom || selectedOptionRef.current) {
+        return;
+      }
+
+      if (
+        !isRoomReadyForSelection({
+          submissions: nextSubmissions,
+          roomSize: currentRoom.size,
+        })
+      ) {
+        return;
+      }
+
+      void resolveSelectionRef.current();
+    },
+    []
+  );
 
   const { users, submissions, setSubmissions } = useRoomSocket({
     roomId,
@@ -111,6 +134,7 @@ export const Room = () => {
     enabled: pageStatus === "inRoom",
     onInvalidUser: handleInvalidUser,
     onSelection: applySelection,
+    onSubmissions: handleSubmissionsUpdate,
   });
 
   useEffect(() => {
@@ -306,7 +330,6 @@ export const Room = () => {
 
       if (selection) {
         applySelection(selection);
-        syncRoomSelection(selection.id);
       } else {
         await loadSelectionIfReady(updatedSubmissions);
       }

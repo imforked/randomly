@@ -97,16 +97,6 @@ export const handleJoin = async ({
   });
 
   if (!join.ok) {
-    if (join.reason === "ALREADY_CONNECTED") {
-      sendError({
-        socket,
-        errorType: REALTIME_ERROR_CODES.ALREADY_CONNECTED,
-        errorMessage: "already connected.",
-      });
-
-      return;
-    }
-
     const occupancy = getOccupancy({ roomId, capacity });
     const {
       roomId: occupancyRoomId,

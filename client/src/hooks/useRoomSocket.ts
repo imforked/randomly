@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RandomOption, RoomSubmission, RoomUser } from "src/api.types";
 import {
   SERVER_EVENTS,
@@ -15,6 +15,7 @@ type UseRoomSocketParams = {
   enabled: boolean;
   onInvalidUser?: () => void;
   onSelection?: (option: RandomOption) => void;
+  onSubmissions?: (submissions: RoomSubmission[]) => void;
 };
 
 export function useRoomSocket({
@@ -23,9 +24,17 @@ export function useRoomSocket({
   enabled,
   onInvalidUser,
   onSelection,
+  onSubmissions,
 }: UseRoomSocketParams) {
   const [users, setUsers] = useState<RoomUser[]>([]);
   const [submissions, setSubmissions] = useState<RoomSubmission[]>([]);
+
+  const onInvalidUserRef = useRef(onInvalidUser);
+  const onSelectionRef = useRef(onSelection);
+  const onSubmissionsRef = useRef(onSubmissions);
+  onInvalidUserRef.current = onInvalidUser;
+  onSelectionRef.current = onSelection;
+  onSubmissionsRef.current = onSubmissions;
 
   useEffect(() => {
     if (!enabled || !roomId || !userId) {
@@ -62,12 +71,13 @@ export function useRoomSocket({
       if (parsed.event === SERVER_EVENTS.SUBMISSIONS) {
         const payload = parsed.payload as RoomSubmissionsPayload;
         setSubmissions(payload.submissions);
+        onSubmissionsRef.current?.(payload.submissions);
         return;
       }
 
       if (parsed.event === SERVER_EVENTS.SELECTION) {
         const payload = parsed.payload as RoomSelectionPayload;
-        onSelection?.(payload.option);
+        onSelectionRef.current?.(payload.option);
         return;
       }
 
@@ -76,7 +86,7 @@ export function useRoomSocket({
           parsed.payload as RoomErrorPayload;
 
         if (code === "INVALID_PAYLOAD" && errorMessage.includes("user")) {
-          onInvalidUser?.();
+          onInvalidUserRef.current?.();
         }
 
         console.error("Room socket error:", errorMessage);
@@ -86,7 +96,7 @@ export function useRoomSocket({
     return () => {
       ws.close();
     };
-  }, [enabled, roomId, userId, onInvalidUser, onSelection]);
+  }, [enabled, roomId, userId]);
 
   return { users, submissions, setSubmissions };
 }
