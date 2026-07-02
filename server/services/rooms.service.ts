@@ -4,7 +4,7 @@ import { RoomConfig } from "../generated/prisma/client.ts";
 import { RoomId } from "../types/realtime.ts";
 
 export const createRoomConfig = async (
-  roomConfig: Omit<RoomConfig, "id" | "expiresAt">
+  roomConfig: Pick<RoomConfig, "topic" | "size" | "optionsPerGuest">
 ) => {
   return await prisma.roomConfig.create({
     data: { ...roomConfig, expiresAt: getDateTime30MinutesFromNow() },

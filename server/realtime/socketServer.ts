@@ -5,13 +5,13 @@ import { sendError } from "./send.ts";
 import { getRoomId, getUserId } from "./parsePayload.ts";
 import { handleJoin, handleDisconnect, handleLeave } from "./handlers/index.ts";
 import { INVALID_MESSAGE_FORMAT } from "../constants/errorMessages.ts";
-import { ALLOWED_ORIGINS } from "../constants/allowedOrigins.ts";
+import { isAllowedOrigin } from "../constants/allowedOrigins.ts";
 
 const connections = new Map();
 
 export const attachSocketServer = (server: Server) => {
   const verifyOrigin: VerifyClientCallbackSync = (info) =>
-    ALLOWED_ORIGINS.includes(info.origin);
+    isAllowedOrigin(info.origin);
 
   const webSocketServer = new WebSocketServer({
     server,

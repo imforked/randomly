@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import type { RoomSubmission, RoomUser } from "src/api.types";
-import { SERVER_EVENTS, type RoomErrorPayload, type RoomSubmissionsPayload, type RoomUsersPayload } from "src/realtime.types";
+import type { RandomOption, RoomSubmission, RoomUser } from "src/api.types";
+import {
+  SERVER_EVENTS,
+  type RoomErrorPayload,
+  type RoomSelectionPayload,
+  type RoomSubmissionsPayload,
+  type RoomUsersPayload,
+} from "src/realtime.types";
 import { getWebSocketUrl } from "src/utils";
 
 type UseRoomSocketParams = {
@@ -8,6 +14,7 @@ type UseRoomSocketParams = {
   userId: string | null;
   enabled: boolean;
   onInvalidUser?: () => void;
+  onSelection?: (option: RandomOption) => void;
 };
 
 export function useRoomSocket({
@@ -15,6 +22,7 @@ export function useRoomSocket({
   userId,
   enabled,
   onInvalidUser,
+  onSelection,
 }: UseRoomSocketParams) {
   const [users, setUsers] = useState<RoomUser[]>([]);
   const [submissions, setSubmissions] = useState<RoomSubmission[]>([]);
@@ -57,6 +65,12 @@ export function useRoomSocket({
         return;
       }
 
+      if (parsed.event === SERVER_EVENTS.SELECTION) {
+        const payload = parsed.payload as RoomSelectionPayload;
+        onSelection?.(payload.option);
+        return;
+      }
+
       if (parsed.event === SERVER_EVENTS.ERROR) {
         const { code, message: errorMessage } =
           parsed.payload as RoomErrorPayload;
@@ -72,7 +86,7 @@ export function useRoomSocket({
     return () => {
       ws.close();
     };
-  }, [enabled, roomId, userId, onInvalidUser]);
+  }, [enabled, roomId, userId, onInvalidUser, onSelection]);
 
   return { users, submissions, setSubmissions };
 }

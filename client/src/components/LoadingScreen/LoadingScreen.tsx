@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -20,7 +21,17 @@ export function LoadingScreen({
 }: LoadingScreenProps) {
   const reducedMotion = usePrefersReducedMotion();
   const visibleRef = useRef(visible);
+  const exitNotifiedRef = useRef(false);
   const [entered, setEntered] = useState(false);
+
+  const notifyExit = useCallback(() => {
+    if (exitNotifiedRef.current) {
+      return;
+    }
+
+    exitNotifiedRef.current = true;
+    onExitComplete?.();
+  }, [onExitComplete]);
 
   useEffect(() => {
     visibleRef.current = visible;
@@ -35,10 +46,15 @@ export function LoadingScreen({
   }, []);
 
   useEffect(() => {
-    if (reducedMotion && !visible && entered) {
-      onExitComplete?.();
+    if (visible) {
+      exitNotifiedRef.current = false;
+      return;
     }
-  }, [reducedMotion, visible, entered, onExitComplete]);
+
+    if (!entered || reducedMotion) {
+      notifyExit();
+    }
+  }, [visible, entered, reducedMotion, notifyExit]);
 
   const isShown = entered && visible;
 
@@ -52,7 +68,7 @@ export function LoadingScreen({
     }
 
     if (!visibleRef.current) {
-      onExitComplete?.();
+      notifyExit();
     }
   };
 

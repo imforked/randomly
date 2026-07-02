@@ -1,4 +1,4 @@
-import type { RoomSubmission } from "src/api.types";
+import type { RandomOption, RoomSubmission } from "src/api.types";
 import { handleBadResponse } from "src/utils";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -25,11 +25,35 @@ export type SubmitRoomOptionsParams = {
   options: string[];
 };
 
+export async function fetchRandomOption(roomId: string): Promise<RandomOption> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/rooms/${roomId}/random`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+
+    if (body?.error) {
+      throw new Error(body.error);
+    }
+
+    handleBadResponse(response);
+  }
+
+  return response.json();
+}
+
 export async function submitRoomOptions({
   roomId,
   userId,
   options,
-}: SubmitRoomOptionsParams): Promise<void> {
+}: SubmitRoomOptionsParams): Promise<RandomOption | null> {
   const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/options`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -47,4 +71,10 @@ export async function submitRoomOptions({
 
     handleBadResponse(response);
   }
+
+  const body = (await response.json()) as {
+    selection?: RandomOption | null;
+  };
+
+  return body.selection ?? null;
 }

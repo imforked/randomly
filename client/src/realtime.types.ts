@@ -1,4 +1,4 @@
-import type { RoomSubmission, RoomUser } from "src/api.types";
+import type { RandomOption, RoomSubmission, RoomUser } from "src/api.types";
 
 export const CLIENT_EVENTS = {
   JOIN: "room:join",
@@ -13,6 +13,7 @@ export const SERVER_EVENTS = {
   ERROR: "room:error",
   USERS: "room:users",
   SUBMISSIONS: "room:submissions",
+  SELECTION: "room:selection",
 } as const;
 
 export type RoomUsersPayload = {
@@ -25,6 +26,11 @@ export type RoomSubmissionsPayload = {
   submissions: RoomSubmission[];
 };
 
+export type RoomSelectionPayload = {
+  roomId: { id: string };
+  option: RandomOption;
+};
+
 export type RoomErrorPayload = {
   code: string;
   message: string;
@@ -33,5 +39,6 @@ export type RoomErrorPayload = {
 export type ServerMessage =
   | { event: typeof SERVER_EVENTS.USERS; payload: RoomUsersPayload }
   | { event: typeof SERVER_EVENTS.SUBMISSIONS; payload: RoomSubmissionsPayload }
+  | { event: typeof SERVER_EVENTS.SELECTION; payload: RoomSelectionPayload }
   | { event: typeof SERVER_EVENTS.ERROR; payload: RoomErrorPayload }
   | { event: string; payload: unknown };

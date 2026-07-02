@@ -13,14 +13,16 @@ datasource db {
 }
 
 model RoomConfig {
-  id              String   @id @default(uuid())
-  topic           String
-  size            Int
-  optionsPerGuest Int
-  expiresAt       DateTime
+  id               String   @id @default(uuid())
+  topic            String
+  size             Int
+  optionsPerGuest  Int
+  expiresAt        DateTime
+  selectedOptionId String?  @unique
 
-  users   User[]
-  options Option[]
+  users          User[]
+  options        Option[]
+  selectedOption Option?  @relation("RoomSelectedOption", fields: [selectedOptionId], references: [id], onDelete: SetNull)
 }
 
 model User {
@@ -41,6 +43,8 @@ model Option {
   room   RoomConfig @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId String
   user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  selectedForRoom RoomConfig? @relation("RoomSelectedOption")
 
   createdAt DateTime @default(now())
 }

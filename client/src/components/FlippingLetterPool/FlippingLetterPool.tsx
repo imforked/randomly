@@ -30,11 +30,17 @@ type ChannelIndex = 0 | 1 | 2;
 
 type CharPos = { lineIndex: number; charIndex: number };
 
-function buildPool(lines: readonly string[]): CharPos[] {
+function buildPool(
+  lines: readonly string[],
+  staticCharsByLine: readonly (readonly string[])[] = []
+): CharPos[] {
   const pool: CharPos[] = [];
   lines.forEach((text, lineIndex) => {
+    const staticChars = new Set(staticCharsByLine[lineIndex] ?? []);
     [...text].forEach((ch, charIndex) => {
-      if (ch !== " ") pool.push({ lineIndex, charIndex });
+      if (ch !== " " && !staticChars.has(ch)) {
+        pool.push({ lineIndex, charIndex });
+      }
     });
   });
   return pool;
@@ -114,19 +120,25 @@ type ChannelsTuple = [ChannelState, ChannelState, ChannelState];
 type PoolContextValue = {
   channels: ChannelsTuple;
   onFlipEnd: (channel: ChannelIndex) => void;
+  staticCharsByLine: readonly (readonly string[])[];
 };
 
 const FlippingLetterPoolContext = createContext<PoolContextValue | null>(null);
 
 export function FlippingLetterPoolProvider({
   lines,
+  staticCharsByLine = [],
   children,
 }: {
   lines: readonly string[];
+  staticCharsByLine?: readonly (readonly string[])[];
   children: ReactNode;
 }) {
   const reducedMotion = usePrefersReducedMotion();
-  const pool = useMemo(() => buildPool(lines), [lines]);
+  const pool = useMemo(
+    () => buildPool(lines, staticCharsByLine),
+    [lines, staticCharsByLine]
+  );
 
   const [actives, setActives] = useState<(CharPos | null)[]>(() =>
     Array.from({ length: CHANNEL_COUNT }, () => null)
@@ -231,8 +243,8 @@ export function FlippingLetterPoolProvider({
   }, [actives, nonces]);
 
   const value = useMemo<PoolContextValue>(
-    () => ({ channels, onFlipEnd }),
-    [channels, onFlipEnd]
+    () => ({ channels, onFlipEnd, staticCharsByLine }),
+    [channels, onFlipEnd, staticCharsByLine]
   );
 
   if (reducedMotion) {
@@ -275,7 +287,8 @@ export function PooledFlippingTitle({
     return createElement(Tag, { className, id }, text);
   }
 
-  const { channels, onFlipEnd } = ctx;
+  const { channels, onFlipEnd, staticCharsByLine } = ctx;
+  const staticChars = new Set(staticCharsByLine[lineIndex] ?? []);
 
   return createElement(
     Tag,
@@ -287,6 +300,14 @@ export function PooledFlippingTitle({
       <span className="sr-only">{text}</span>
       <span className="flip-title" aria-hidden="true">
         {renderFlipTitleWords(text, (ch, i, key) => {
+          if (staticChars.has(ch)) {
+            return (
+              <span key={key} className="flip-letter flip-letter--static">
+                {ch.toLowerCase()}
+              </span>
+            );
+          }
+
           for (const c of [0, 1, 2] as const) {
             const { active, animNonce } = channels[c];
             const isActive =

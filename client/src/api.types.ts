@@ -4,6 +4,7 @@ export type RoomConfig = {
   optionsPerGuest: number;
   id: string;
   expiresAt: Date;
+  selectedOptionId: string | null;
 };
 
 export type User = {
@@ -19,4 +20,12 @@ export type RoomSubmission = {
   id: string;
   name: string;
   hasSubmitted: boolean;
+};
+
+export type RandomOption = {
+  id: string;
+  value: string;
+  roomId: string;
+  userId: string;
+  user: RoomUser;
 };

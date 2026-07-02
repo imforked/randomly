@@ -18,6 +18,8 @@ import {
 } from "../../constants/errorMessages.ts";
 import { WebSocket } from "ws";
 import { getUserInRoom, getUsersInRoom } from "../../services/user.service.ts";
+import { getSelectedOption } from "../../services/options.service.ts";
+import { toSelectionPayload } from "../../services/selection.service.ts";
 
 export const handleJoin = async ({
   socket,
@@ -156,5 +158,18 @@ export const handleJoin = async ({
         users: normalizedUsers,
       },
     });
+
+    const selectedOption = await getSelectedOption({ roomId: roomId.id });
+
+    if (selectedOption) {
+      send({
+        socket,
+        event: SERVER_EVENTS.SELECTION,
+        payload: {
+          roomId,
+          option: toSelectionPayload(selectedOption),
+        },
+      });
+    }
   }
 };

@@ -106,6 +106,7 @@ export function CreateRoomPage() {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 autoComplete="off"
+                placeholder="What hike are we doing?"
                 aria-labelledby={decidingId}
               />
             </div>

@@ -2,6 +2,7 @@ import { RoomConfig } from "../generated/prisma/client.ts";
 import {
   RoomId,
   RoomOccupancyPayload,
+  RoomSelectionPayload,
   RoomSubmissionsPayload,
   RoomUsersPayload,
   SERVER_EVENTS,
@@ -88,6 +89,28 @@ export const broadcastSubmissions = ({
     send({
       socket: clientSocket,
       event: SERVER_EVENTS.SUBMISSIONS,
+      payload,
+    });
+  }
+};
+
+export const broadcastSelection = ({
+  roomId,
+  payload,
+}: {
+  roomId: RoomId;
+  payload: RoomSelectionPayload;
+}) => {
+  const socketsInRoom = roomSockets.get(roomId.id);
+
+  if (!socketsInRoom) {
+    return;
+  }
+
+  for (const clientSocket of socketsInRoom) {
+    send({
+      socket: clientSocket,
+      event: SERVER_EVENTS.SELECTION,
       payload,
     });
   }

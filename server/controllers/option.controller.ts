@@ -3,13 +3,22 @@ import {
   countUserOptionsInRoom,
   createOptions as createOptionsConfig,
   getOptionsInRoom,
-  selectRandomOption,
+  getOrSelectRandomOption,
+  getSelectedOption,
 } from "../services/options.service.ts";
 import { optionsCreateBodySchema } from "../schemas/options.ts";
 import { loadActiveRoom } from "./utils.ts";
 import { getUserInRoom } from "../services/user.service.ts";
-import { broadcastSubmissions } from "../realtime/roomSocket.ts";
+import {
+  broadcastSelection,
+  broadcastSubmissions,
+} from "../realtime/roomSocket.ts";
 import { getSubmissions } from "../services/submissions.service.ts";
+import {
+  isRoomReadyForSelection,
+  toSelectionPayload,
+  tryCompleteRoomSelection,
+} from "../services/selection.service.ts";
 
 export const createOptions = async (req: Request, res: Response) => {
   const parsed = optionsCreateBodySchema.safeParse(req.body);
@@ -73,7 +82,25 @@ export const createOptions = async (req: Request, res: Response) => {
     },
   });
 
-  return res.status(201).json(options);
+  const selection = await tryCompleteRoomSelection({
+    roomId,
+    roomSize: room.size,
+  });
+
+  if (selection) {
+    broadcastSelection({
+      roomId: roomIdRef,
+      payload: {
+        roomId: roomIdRef,
+        option: toSelectionPayload(selection),
+      },
+    });
+  }
+
+  return res.status(201).json({
+    options,
+    selection: selection ? toSelectionPayload(selection) : null,
+  });
 };
 
 export const getOptionsWithUsers = async (req: Request, res: Response) => {
@@ -107,11 +134,36 @@ export const getRandomOption = async (req: Request, res: Response) => {
     return;
   }
 
-  const randomOption = await selectRandomOption({ roomId });
+  const existingSelection = await getSelectedOption({ roomId });
+
+  if (existingSelection) {
+    return res.status(200).json(existingSelection);
+  }
+
+  const ready = await isRoomReadyForSelection({
+    roomId,
+    roomSize: room.size,
+  });
+
+  if (!ready) {
+    return res.status(409).json({ error: "Room is not ready for selection." });
+  }
+
+  const randomOption = await getOrSelectRandomOption({ roomId });
 
   if (!randomOption) {
     return res.status(404).json({ error: "No options found for this room." });
   }
+
+  const roomIdRef = { id: roomId };
+
+  broadcastSelection({
+    roomId: roomIdRef,
+    payload: {
+      roomId: roomIdRef,
+      option: toSelectionPayload(randomOption),
+    },
+  });
 
   return res.status(200).json(randomOption);
 };

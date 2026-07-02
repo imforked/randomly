@@ -15,6 +15,7 @@ export enum SERVER_EVENTS {
   ERROR = "room:error",
   USERS = "room:users",
   SUBMISSIONS = "room:submissions",
+  SELECTION = "room:selection",
 }
 
 export type RoomJoinPayload = {
@@ -64,6 +65,17 @@ export type RoomSubmissionsPayload = {
   }[];
 };
 
+export type RoomSelectionPayload = {
+  roomId: RoomId;
+  option: {
+    id: string;
+    value: string;
+    roomId: string;
+    userId: string;
+    user: Pick<User, "id" | "name">;
+  };
+};
+
 export type Payload =
   | RoomJoinPayload
   | RoomLeavePayload
@@ -73,7 +85,8 @@ export type Payload =
   | RoomFullPayload
   | RoomErrorPayload
   | RoomUsersPayload
-  | RoomSubmissionsPayload;
+  | RoomSubmissionsPayload
+  | RoomSelectionPayload;
 
 export type ClientPayload = {
   roomId: string;

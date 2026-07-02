@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { type RoomConfig, type User } from "src/api.types";
+import { useNavigate, useParams } from "react-router-dom";
+import { type RandomOption, type RoomConfig, type User } from "src/api.types";
 import {
+  fetchRandomOption,
   fetchRoomSubmissions,
   submitRoomOptions,
 } from "src/api/roomExperienceApi";
@@ -14,6 +15,7 @@ import {
   clearStoredUserId,
   getStoredUserId,
   handleBadResponse,
+  isRoomReadyForSelection,
   setStoredUserId,
 } from "src/utils";
 import type { PageStatus } from "./Room.types";
@@ -33,10 +35,15 @@ export const Room = () => {
   const [optionsErrorMessage, setOptionsErrorMessage] = useState<string | null>(
     null
   );
+  const [selectionEpoch, setSelectionEpoch] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<RandomOption | null>(
+    null
+  );
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { roomId } = useParams();
+  const navigate = useNavigate();
   const waitForMinimumLoading = useMinimumDuration(LOADING_MIN_MS);
 
   const finishInitialLoading = useCallback(() => {
@@ -57,11 +64,53 @@ export const Room = () => {
     setPageStatus("nameEntry");
   }, [roomId]);
 
+  const applySelection = useCallback((option: RandomOption) => {
+    let isNewSelection = false;
+
+    setSelectedOption((current) => {
+      if (current?.id === option.id) {
+        return current;
+      }
+
+      isNewSelection = true;
+      return option;
+    });
+
+    if (isNewSelection) {
+      setSelectionEpoch((epoch) => epoch + 1);
+    }
+  }, []);
+
+  const syncRoomSelection = useCallback((optionId: string) => {
+    setRoom((currentRoom) =>
+      currentRoom?.selectedOptionId === optionId
+        ? currentRoom
+        : currentRoom
+          ? { ...currentRoom, selectedOptionId: optionId }
+          : currentRoom
+    );
+  }, []);
+
+  const resolveSelection = useCallback(async () => {
+    if (!roomId || !room || selectedOption) {
+      return;
+    }
+
+    try {
+      const option = await fetchRandomOption(roomId);
+      applySelection(option);
+      syncRoomSelection(option.id);
+    } catch (fetchError) {
+      console.error(fetchError);
+    }
+  }, [roomId, room, selectedOption, applySelection, syncRoomSelection]);
+
   const { users, submissions, setSubmissions } = useRoomSocket({
     roomId,
     userId,
     enabled: pageStatus === "inRoom",
     onInvalidUser: handleInvalidUser,
+    onSelection: applySelection,
   });
 
   useEffect(() => {
@@ -155,6 +204,46 @@ export const Room = () => {
     void loadSubmissions();
   }, [pageStatus, roomId, setSubmissions]);
 
+  useEffect(() => {
+    if (!roomId || !room || selectedOption) {
+      return;
+    }
+
+    if (room.selectedOptionId) {
+      void resolveSelection();
+      return;
+    }
+
+    if (!isRoomReadyForSelection({ submissions, roomSize: room.size })) {
+      return;
+    }
+
+    void resolveSelection();
+  }, [roomId, room, submissions, selectedOption, resolveSelection]);
+
+  const requestSelection = useCallback(async () => {
+    if (!roomId || !room || selectedOption) {
+      return;
+    }
+
+    if (!isRoomReadyForSelection({ submissions, roomSize: room.size })) {
+      return;
+    }
+
+    await resolveSelection();
+  }, [roomId, room, submissions, selectedOption, resolveSelection]);
+
+  const loadSelectionIfReady = useCallback(
+    async (nextSubmissions: Awaited<ReturnType<typeof fetchRoomSubmissions>>) => {
+      if (!isRoomReadyForSelection({ submissions: nextSubmissions, roomSize: room?.size ?? 0 })) {
+        return;
+      }
+
+      await resolveSelection();
+    },
+    [room?.size, resolveSelection]
+  );
+
   const handleNameSubmit = async (name: string) => {
     setIsSubmittingName(true);
     setFormErrorMessage(null);
@@ -198,6 +287,10 @@ export const Room = () => {
     }
   };
 
+  const handleThanksComplete = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
   const handleSubmitOptions = async (options: string[]) => {
     if (!roomId || !userId) {
       return;
@@ -207,7 +300,16 @@ export const Room = () => {
     setOptionsErrorMessage(null);
 
     try {
-      await submitRoomOptions({ roomId, userId, options });
+      const selection = await submitRoomOptions({ roomId, userId, options });
+      const updatedSubmissions = await fetchRoomSubmissions(roomId);
+      setSubmissions(updatedSubmissions);
+
+      if (selection) {
+        applySelection(selection);
+        syncRoomSelection(selection.id);
+      } else {
+        await loadSelectionIfReady(updatedSubmissions);
+      }
     } catch (error) {
       if (error instanceof Error) {
         setOptionsErrorMessage(error.message);
@@ -255,6 +357,10 @@ export const Room = () => {
       userId={userId}
       users={users}
       submissions={submissions}
+      selectedOption={selectedOption}
+      selectionEpoch={selectionEpoch}
+      onRequestSelection={requestSelection}
+      onThanksComplete={handleThanksComplete}
       onSubmitOptions={handleSubmitOptions}
       isSubmittingOptions={isSubmittingOptions}
       optionsErrorMessage={optionsErrorMessage}

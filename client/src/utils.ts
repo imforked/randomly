@@ -47,3 +47,16 @@ export const getWebSocketUrl = (): string => {
 
   return `${wsProtocol}//${parsed.host}`;
 };
+
+export const isRoomReadyForSelection = ({
+  submissions,
+  roomSize,
+}: {
+  submissions: { hasSubmitted: boolean }[];
+  roomSize: number;
+}) => {
+  return (
+    submissions.length >= roomSize &&
+    submissions.every((submission) => submission.hasSubmitted)
+  );
+};
