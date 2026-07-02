@@ -9,7 +9,7 @@ import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
 import { useAnimatedModal } from "src/hooks/useAnimatedModal";
 import "./StartRoomModal.css";
 
-const SHARE_ROOM_FLIP_LINES = ["Share the Room"] as const;
+const SHARE_ROOM_FLIP_LINES = ["share the room"] as const;
 
 /** Named runtime export; default import is a broken nested object under Vite ESM/CJS interop. */
 type QRCodeProps = SVGProps<SVGSVGElement> & {
@@ -77,7 +77,7 @@ export function StartRoomModal({
       <button
         type="button"
         className="modal-backdrop"
-        aria-label="Close dialog"
+        aria-label="close dialog"
         onClick={handleClose}
       />
       <div
@@ -92,7 +92,7 @@ export function StartRoomModal({
         <button
           type="button"
           className="btn btn-secondary modal-close-btn"
-          aria-label="Close"
+          aria-label="close"
           onClick={handleClose}
         >
           <svg
@@ -133,13 +133,13 @@ export function StartRoomModal({
               className="btn btn-secondary modal-copy-btn"
               onClick={copyLink}
             >
-              {copied ? "Copied" : "Copy Link"}
+              {copied ? "copied" : "copy link"}
             </button>
             <a
               href={roomUrl ?? ""}
               className="btn btn-secondary modal-go-room-btn"
             >
-              Go to Room
+              go to room
             </a>
           </div>
         </FlippingLetterPoolProvider>

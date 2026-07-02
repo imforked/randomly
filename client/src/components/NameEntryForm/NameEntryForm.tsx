@@ -5,7 +5,7 @@ import {
 } from "src/components/FlippingLetterPool/FlippingLetterPool";
 import "./NameEntryForm.css";
 
-const NAME_ENTRY_FLIP_LINES = ["What's your name?"] as const;
+const NAME_ENTRY_FLIP_LINES = ["what's your name?"] as const;
 
 const NAME_MAX_LENGTH = 50;
 
@@ -86,7 +86,7 @@ export function NameEntryForm({
               className="btn name-entry-form__submit"
               disabled={!canSubmit}
             >
-              Enter Room
+              enter room
             </button>
           </form>
         </FlippingLetterPoolProvider>

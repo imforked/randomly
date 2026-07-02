@@ -87,7 +87,7 @@ export function LoadingScreen({
     >
       <FlippingText
         as="h1"
-        text="Loading"
+        text="loading"
         staticSuffix="..."
         className="guide-prompt loading-screen__text"
         startImmediately

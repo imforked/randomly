@@ -7,9 +7,9 @@ export function LandingPage() {
     <main className="shell shell-landing">
       <div className="stack-lg">
         <header className="stack">
-          <FlippingText as="h1" text="Randomly" className="guide-prompt" />
+          <FlippingText as="h1" text="randomly" className="guide-prompt" />
           <p className="subhead">
-            By{" "}
+            by{" "}
             <a
               href="https://www.instagram.com/100.11101/"
               target="_blank"
@@ -21,7 +21,7 @@ export function LandingPage() {
           </p>
         </header>
         <Link to="/create" className="btn">
-          Start a Room
+          start a room
         </Link>
       </div>
     </main>

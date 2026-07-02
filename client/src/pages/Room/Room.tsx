@@ -117,7 +117,7 @@ export const Room = () => {
     if (!roomId) {
       void (async () => {
         await waitForMinimumLoading();
-        setError("roomId is undefined.");
+        setError("room id is undefined.");
         setPageStatus("error");
         finishInitialLoading();
       })();
@@ -160,7 +160,7 @@ export const Room = () => {
 
         if (!canHaveAccess) {
           await waitForMinimumLoading();
-          setError("Room is full.");
+          setError("room is full.");
           setPageStatus("error");
           finishInitialLoading();
           return;
@@ -176,7 +176,7 @@ export const Room = () => {
         if (error instanceof Error) {
           setError(error.message);
         } else {
-          setError("Something went wrong.");
+          setError("something went wrong.");
         }
         setPageStatus("error");
         finishInitialLoading();
@@ -250,7 +250,7 @@ export const Room = () => {
 
     if (!roomId) {
       setIsSubmittingName(false);
-      throw new Error("roomId is undefined.");
+      throw new Error("room id is undefined.");
     }
 
     try {
@@ -268,7 +268,7 @@ export const Room = () => {
       const user = await response.json();
 
       if (!user.id) {
-        setFormErrorMessage("Something went wrong.");
+        setFormErrorMessage("something went wrong.");
         return;
       }
 
@@ -279,7 +279,7 @@ export const Room = () => {
       if (error instanceof Error) {
         setFormErrorMessage(error.message);
       } else {
-        setFormErrorMessage("Something went wrong.");
+        setFormErrorMessage("something went wrong.");
       }
       console.error(error);
     } finally {
@@ -314,7 +314,7 @@ export const Room = () => {
       if (error instanceof Error) {
         setOptionsErrorMessage(error.message);
       } else {
-        setOptionsErrorMessage("Something went wrong.");
+        setOptionsErrorMessage("something went wrong.");
       }
       console.error(error);
       throw error;

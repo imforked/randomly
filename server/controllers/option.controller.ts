@@ -24,7 +24,7 @@ export const createOptions = async (req: Request, res: Response) => {
   const parsed = optionsCreateBodySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
-      error: "Invalid body.",
+      error: "invalid body.",
       details: parsed.error.flatten(),
     });
   }
@@ -32,7 +32,7 @@ export const createOptions = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);
@@ -46,7 +46,7 @@ export const createOptions = async (req: Request, res: Response) => {
   if (!user) {
     return res
       .status(403)
-      .json({ error: "User does not belong to this room." });
+      .json({ error: "user does not belong to this room." });
   }
 
   const existingCount = await countUserOptionsInRoom({
@@ -56,7 +56,7 @@ export const createOptions = async (req: Request, res: Response) => {
 
   if (existingCount + parsed.data.options.length > room.optionsPerGuest) {
     return res.status(409).json({
-      error: `You can only add ${room.optionsPerGuest} options.`,
+      error: `you can only add ${room.optionsPerGuest} options.`,
     });
   }
 
@@ -107,7 +107,7 @@ export const getOptionsWithUsers = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);
@@ -125,7 +125,7 @@ export const getRandomOption = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);
@@ -146,13 +146,13 @@ export const getRandomOption = async (req: Request, res: Response) => {
   });
 
   if (!ready) {
-    return res.status(409).json({ error: "Room is not ready for selection." });
+    return res.status(409).json({ error: "room is not ready for selection." });
   }
 
   const randomOption = await getOrSelectRandomOption({ roomId });
 
   if (!randomOption) {
-    return res.status(404).json({ error: "No options found for this room." });
+    return res.status(404).json({ error: "no options found for this room." });
   }
 
   const roomIdRef = { id: roomId };

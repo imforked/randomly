@@ -55,7 +55,7 @@ export function OptionsModal({
       <button
         type="button"
         className="modal-backdrop"
-        aria-label="Close dialog"
+        aria-label="close dialog"
         onClick={handleClose}
       />
       <div
@@ -63,14 +63,14 @@ export function OptionsModal({
         className="modal-panel options-modal__panel"
         role="dialog"
         aria-modal="true"
-        aria-label="Submit your options"
+        aria-label="submit your options"
         tabIndex={-1}
         onTransitionEnd={onPanelTransitionEnd}
       >
         <button
           type="button"
           className="btn btn-secondary modal-close-btn"
-          aria-label="Close"
+          aria-label="close"
           onClick={handleClose}
         >
           <svg

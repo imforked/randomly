@@ -13,7 +13,7 @@ export const createRoom = async (req: Request, res: Response) => {
   const parsed = roomConfigCreateBodySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
-      error: "Invalid body",
+      error: "invalid body",
       details: parsed.error.flatten(),
     });
   }
@@ -27,7 +27,7 @@ export const getRoomById = async (req: Request, res: Response) => {
   const roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);
@@ -41,7 +41,7 @@ export const getRoomOccupancy = async (req: Request, res: Response) => {
   const roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { RandomOption } from "src/api.types";
 
 export const SELECTION_THANKS_TEXT =
-  "Thanks for using. Give me a follow @100.11101";
+  "thanks for using. give me a follow @100.11101";
 
 export const SELECTION_TIMING = {
   fadeMs: 500,

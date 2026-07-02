@@ -65,7 +65,7 @@ export const handleJoin = async ({
     sendError({
       socket,
       errorType: REALTIME_ERROR_CODES.ROOM_EXPIRED,
-      errorMessage: "Room is expired.",
+      errorMessage: "room is expired.",
     });
 
     return;
@@ -75,7 +75,7 @@ export const handleJoin = async ({
     return sendError({
       socket,
       errorType: REALTIME_ERROR_CODES.INVALID_PAYLOAD,
-      errorMessage: "Invalid userId",
+      errorMessage: "invalid user id",
     });
   }
 
@@ -85,7 +85,7 @@ export const handleJoin = async ({
     return sendError({
       socket,
       errorType: REALTIME_ERROR_CODES.INVALID_PAYLOAD,
-      errorMessage: "Invalid userId",
+      errorMessage: "invalid user id",
     });
   }
 
@@ -101,7 +101,7 @@ export const handleJoin = async ({
       sendError({
         socket,
         errorType: REALTIME_ERROR_CODES.ALREADY_CONNECTED,
-        errorMessage: "Already connected.",
+        errorMessage: "already connected.",
       });
 
       return;

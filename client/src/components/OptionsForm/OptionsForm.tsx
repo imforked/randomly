@@ -105,14 +105,14 @@ export function OptionsForm({
                   value={value}
                   onChange={(e) => updateField(index, e.target.value)}
                   autoComplete="off"
-                  aria-label={`Option ${index + 1}`}
+                  aria-label={`option ${index + 1}`}
                   disabled={isSubmitting || disabled}
                 />
                 {canRemove ? (
                   <button
                     type="button"
                     className="btn btn-secondary options-form__remove-btn"
-                    aria-label={`Remove option ${index + 1}`}
+                    aria-label={`remove option ${index + 1}`}
                     disabled={isSubmitting || disabled}
                     onClick={() => removeField(index)}
                   >
@@ -125,7 +125,7 @@ export function OptionsForm({
               <button
                 type="button"
                 className="btn btn-secondary options-form__add-btn"
-                aria-label="Add another option"
+                aria-label="add another option"
                 disabled={isSubmitting || disabled}
                 onClick={addField}
               >
@@ -146,7 +146,7 @@ export function OptionsForm({
           className="btn options-form__submit"
           disabled={!canSubmit}
         >
-          Submit options
+          submit options
         </button>
       </form>
     </FlippingLetterPoolProvider>

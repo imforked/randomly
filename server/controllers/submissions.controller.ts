@@ -6,7 +6,7 @@ export const getRoomSubmissions = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);

@@ -1,16 +1,16 @@
 export const handleBadResponse = (apiResponse: Response) => {
   if (!apiResponse.ok) {
     if (apiResponse.status === 404) {
-      throw new Error("Room not found.");
+      throw new Error("room not found.");
     }
     if (apiResponse.status === 409) {
-      throw new Error("Room is full.");
+      throw new Error("room is full.");
     }
     if (apiResponse.status === 410) {
-      throw new Error("Room expired.");
+      throw new Error("room expired.");
     }
 
-    throw new Error("Something went wrong.");
+    throw new Error("something went wrong.");
   }
 };
 

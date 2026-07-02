@@ -11,7 +11,7 @@ export const createUser = async (req: Request, res: Response) => {
   const parsed = userCreateBodySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
-      error: "Invalid body",
+      error: "invalid body",
       details: parsed.error.flatten(),
     });
   }
@@ -19,7 +19,7 @@ export const createUser = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);
@@ -32,7 +32,7 @@ export const createUser = async (req: Request, res: Response) => {
 
   if (existingUserCount >= room.size) {
     return res.status(409).json({
-      error: "Room is full.",
+      error: "room is full.",
     });
   }
 
@@ -48,7 +48,7 @@ export const getUsers = async (req: Request, res: Response) => {
   let roomId = req.params.id;
 
   if (typeof roomId !== "string") {
-    return res.status(400).json({ error: "Invalid room id." });
+    return res.status(400).json({ error: "invalid room id." });
   }
 
   const room = await loadActiveRoom(roomId, res);

@@ -8,16 +8,16 @@ import {
 
 export const roomConfigCreateBodySchema = z.object({
   topic: z
-    .string({ error: "Topic is required" })
+    .string({ error: "topic is required" })
     .trim()
-    .min(1, "Topic is required"),
+    .min(1, "topic is required"),
   size: z
-    .coerce.number({ error: "Size is required" })
+    .coerce.number({ error: "size is required" })
     .int()
     .min(ROOM_SIZE_MIN)
     .max(ROOM_SIZE_MAX),
   optionsPerGuest: z
-    .coerce.number({ error: "Options per guest is required" })
+    .coerce.number({ error: "options per guest is required" })
     .int()
     .min(OPTIONS_PER_GUEST_MIN)
     .max(OPTIONS_PER_GUEST_MAX),

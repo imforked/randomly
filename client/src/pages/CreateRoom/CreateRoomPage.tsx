@@ -19,9 +19,9 @@ const OPTIONS_DEFAULT = 3;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CREATE_ROOM_FLIP_LINES = [
-  "What are you deciding on?",
-  "How big is your room?",
-  "How many options per guest?",
+  "what are you deciding on?",
+  "how big is your room?",
+  "how many options per guest?",
 ] as const;
 
 export type RoomDraft = {
@@ -50,7 +50,7 @@ const createRoomConfig = async (
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create room");
+    throw new Error("failed to create room");
   }
 
   return response.json();
@@ -82,7 +82,7 @@ export function CreateRoomPage() {
     <main className="shell shell-landing">
       <div className="stack-lg">
         <Link to="/" className="btn btn-secondary create-room-page__back">
-          ← Back
+          ← back
         </Link>
         <FlippingLetterPoolProvider lines={CREATE_ROOM_FLIP_LINES}>
           <form
@@ -106,7 +106,7 @@ export function CreateRoomPage() {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 autoComplete="off"
-                placeholder="What hike are we doing?"
+                placeholder="where are we hiking?"
                 aria-labelledby={decidingId}
               />
             </div>
@@ -127,7 +127,7 @@ export function CreateRoomPage() {
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
-                  aria-label="Decrease room size"
+                  aria-label="decrease room size"
                   disabled={roomSize <= ROOM_SIZE_MIN}
                   onClick={() =>
                     setRoomSize((n) => Math.max(ROOM_SIZE_MIN, n - 1))
@@ -144,7 +144,7 @@ export function CreateRoomPage() {
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
-                  aria-label="Increase room size"
+                  aria-label="increase room size"
                   disabled={roomSize >= ROOM_SIZE_MAX}
                   onClick={() =>
                     setRoomSize((n) => Math.min(ROOM_SIZE_MAX, n + 1))
@@ -171,7 +171,7 @@ export function CreateRoomPage() {
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
-                  aria-label="Decrease options per guest"
+                  aria-label="decrease options per guest"
                   disabled={optionsPerGuest <= OPTIONS_MIN}
                   onClick={() =>
                     setOptionsPerGuest((n) => Math.max(OPTIONS_MIN, n - 1))
@@ -188,7 +188,7 @@ export function CreateRoomPage() {
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
-                  aria-label="Increase options per guest"
+                  aria-label="increase options per guest"
                   disabled={optionsPerGuest >= OPTIONS_MAX}
                   onClick={() =>
                     setOptionsPerGuest((n) => Math.min(OPTIONS_MAX, n + 1))
@@ -200,7 +200,7 @@ export function CreateRoomPage() {
             </div>
 
             <button type="submit" className="btn create-room-page__submit">
-              Create a Room
+              create a room
             </button>
           </form>
         </FlippingLetterPoolProvider>

@@ -118,7 +118,7 @@ export function RoomExperience({
 
   const getSubmissionStatus = (id: string) => {
     const submission = submissions.find((entry) => entry.id === id);
-    return submission?.hasSubmitted ? "Submitted" : "waiting for submission";
+    return submission?.hasSubmitted ? "submitted" : "waiting for submission";
   };
 
   const handleSubmitOptions = async (options: string[]) => {
@@ -161,7 +161,7 @@ export function RoomExperience({
 
           {currentUserHasSubmitted ? (
             <p className="room-experience__submitted-message text-body">
-              You&apos;ve submitted.
+              you&apos;ve submitted.
             </p>
           ) : (
             <button
@@ -169,7 +169,7 @@ export function RoomExperience({
               className="btn room-experience__options-btn"
               onClick={() => setOptionsModalOpen(true)}
             >
-              Add your options
+              add your options
             </button>
           )}
 
@@ -178,8 +178,8 @@ export function RoomExperience({
               className="room-experience__section"
               aria-label={
                 waitingForOthersLabel
-                  ? `Guests ${waitingForOthersLabel}`
-                  : "Guests"
+                  ? `guests ${waitingForOthersLabel}`
+                  : "guests"
               }
             >
               <h2 className="room-experience__section-title">
@@ -192,7 +192,7 @@ export function RoomExperience({
                 ) : null}
               </h2>
               {users.length === 0 ? (
-                <p className="room-experience__empty text-body">No guests yet.</p>
+                <p className="room-experience__empty text-body">no guests yet.</p>
               ) : (
                 <ul className="room-experience__guest-list">
                   {users.map((user) => (
@@ -203,7 +203,7 @@ export function RoomExperience({
                       <span
                         className={[
                           "room-experience__guest-status",
-                          getSubmissionStatus(user.id) === "Submitted"
+                          getSubmissionStatus(user.id) === "submitted"
                             ? "room-experience__guest-status--submitted"
                             : "",
                         ]
