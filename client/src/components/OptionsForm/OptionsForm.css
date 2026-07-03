@@ -24,11 +24,12 @@
 .options-form__inputs {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
   --options-field-height: 48px;
 }
 
 .options-form__input-row {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -88,25 +89,4 @@
 .options-form__submit:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-}
-
-.options-form__input--error {
-  border-color: var(--color-form-error);
-}
-
-.options-form__input--error:hover {
-  border-color: var(--color-form-error);
-}
-
-.options-form__input--error:focus {
-  border-color: var(--color-form-error);
-  box-shadow: 0 0 0 3px var(--color-form-error-ring);
-}
-
-.options-form__error {
-  margin: 0;
-  font-size: var(--text-caption);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--color-form-error);
 }
