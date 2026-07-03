@@ -20,7 +20,7 @@ import {
 } from "src/utils";
 import type { PageStatus } from "./Room.types";
 
-const LOADING_MIN_MS = 1000;
+const LOADING_MIN_MS = 2500;
 
 export const Room = () => {
   const [room, setRoom] = useState<RoomConfig | null>(null);
