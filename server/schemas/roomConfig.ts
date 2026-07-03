@@ -5,12 +5,13 @@ import {
   ROOM_SIZE_MAX,
   ROOM_SIZE_MIN,
 } from "../constants/roomConfigLimits.ts";
+import { sanitizePlainText } from "../utils.ts";
 
 export const roomConfigCreateBodySchema = z.object({
   topic: z
     .string({ error: "topic is required" })
-    .trim()
-    .min(1, "topic is required"),
+    .transform(sanitizePlainText)
+    .pipe(z.string().min(1, "topic is required")),
   size: z
     .coerce.number({ error: "size is required" })
     .int()

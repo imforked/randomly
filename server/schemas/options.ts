@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { OPTIONS_PER_GUEST_MAX } from "../constants/roomConfigLimits.ts";
+import { sanitizePlainText } from "../utils.ts";
 
 export const optionsCreateBodySchema = z.object({
   userId: z.string().min(1, { error: "userid required." }),
@@ -7,8 +8,12 @@ export const optionsCreateBodySchema = z.object({
     .array(
       z
         .string({ error: "option must contain at least one character." })
-        .trim()
-        .min(1, { error: "option must contain at least one character." })
+        .transform(sanitizePlainText)
+        .pipe(
+          z
+            .string()
+            .min(1, { error: "option must contain at least one character." })
+        )
     )
     .min(1, {
       error: `at least 1 option is required.`,
