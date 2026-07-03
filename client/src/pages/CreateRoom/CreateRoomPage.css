@@ -11,6 +11,7 @@
 }
 
 .create-room-page__field {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -37,6 +38,10 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+}
+
+.create-room-page__stepper--error {
+  border-color: var(--color-form-error);
 }
 
 .create-room-page__stepper-value {

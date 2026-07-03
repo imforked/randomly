@@ -4,6 +4,7 @@ import {
   FlippingLetterPoolProvider,
   PooledFlippingTitle,
 } from "src/components/FlippingLetterPool/FlippingLetterPool";
+import { FieldError } from "src/components/FieldError/FieldError";
 import { StartRoomModal } from "src/components/StartRoomModal/StartRoomModal";
 import {
   OPTIONS_PER_GUEST_MAX as OPTIONS_MAX,
@@ -12,6 +13,12 @@ import {
   ROOM_SIZE_MIN,
 } from "@shared/roomConfigLimits.ts";
 import "./CreateRoomPage.css";
+import { z } from "zod";
+import {
+  CreateRoomSchema,
+  MAX_CHARACTER_LIMIT,
+  type FormError,
+} from "./CreateRoomPage.schema";
 
 const ROOM_SIZE_DEFAULT = 4;
 const OPTIONS_DEFAULT = 3;
@@ -58,21 +65,45 @@ const createRoomConfig = async (
 
 export function CreateRoomPage() {
   const decidingId = useId();
+  const topicErrorId = useId();
   const roomSizeId = useId();
+  const roomSizeErrorId = useId();
   const optionsId = useId();
+  const optionsErrorId = useId();
 
   const [topic, setTopic] = useState("");
   const [roomSize, setRoomSize] = useState(ROOM_SIZE_DEFAULT);
   const [optionsPerGuest, setOptionsPerGuest] = useState(OPTIONS_DEFAULT);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [roomId, setRoomId] = useState<null | CreatedRoomConfig["id"]>(null);
+  const [formErrors, setFormErrors] = useState<FormError>(null);
+
+  const topicError = formErrors?.fieldErrors.topic;
+  const sizeError = formErrors?.fieldErrors.size;
+  const optionsPerGuestError = formErrors?.fieldErrors.optionsPerGuest;
+  const hasTopicError = Boolean(topicError?.length);
+  const hasSizeError = Boolean(sizeError?.length);
+  const hasOptionsPerGuestError = Boolean(optionsPerGuestError?.length);
+
+  const clearFormErrors = useCallback(() => {
+    setFormErrors((current) => (current ? null : current));
+  }, []);
 
   const submit = useCallback(async () => {
-    const { id } = await createRoomConfig({
+    const result = CreateRoomSchema.safeParse({
       topic,
       size: roomSize,
       optionsPerGuest,
     });
+
+    if (!result.success) {
+      setFormErrors(z.flattenError(result.error));
+      return;
+    }
+
+    setFormErrors(null);
+
+    const { id } = await createRoomConfig(result.data);
 
     setRoomId(id);
     setShareModalOpen(true);
@@ -102,13 +133,25 @@ export function CreateRoomPage() {
               />
               <input
                 type="text"
-                className="field-input"
+                className={[
+                  "field-input",
+                  hasTopicError ? "field-input--error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                onChange={(e) => {
+                  setTopic(e.target.value);
+                  clearFormErrors();
+                }}
                 autoComplete="off"
                 placeholder="where are we hiking?"
                 aria-labelledby={decidingId}
+                aria-invalid={hasTopicError}
+                aria-describedby={hasTopicError ? topicErrorId : undefined}
+                maxLength={MAX_CHARACTER_LIMIT}
               />
+              <FieldError id={topicErrorId} message={topicError} />
             </div>
 
             <div className="create-room-page__field">
@@ -120,18 +163,26 @@ export function CreateRoomPage() {
                 className="create-room-page__prompt"
               />
               <div
-                className="create-room-page__stepper"
+                className={[
+                  "create-room-page__stepper",
+                  hasSizeError ? "create-room-page__stepper--error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 role="group"
                 aria-labelledby={roomSizeId}
+                aria-invalid={hasSizeError}
+                aria-describedby={hasSizeError ? roomSizeErrorId : undefined}
               >
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
                   aria-label="decrease room size"
                   disabled={roomSize <= ROOM_SIZE_MIN}
-                  onClick={() =>
-                    setRoomSize((n) => Math.max(ROOM_SIZE_MIN, n - 1))
-                  }
+                  onClick={() => {
+                    setRoomSize((n) => Math.max(ROOM_SIZE_MIN, n - 1));
+                    clearFormErrors();
+                  }}
                 >
                   −
                 </button>
@@ -146,13 +197,15 @@ export function CreateRoomPage() {
                   className="btn btn-secondary create-room-page__stepper-btn"
                   aria-label="increase room size"
                   disabled={roomSize >= ROOM_SIZE_MAX}
-                  onClick={() =>
-                    setRoomSize((n) => Math.min(ROOM_SIZE_MAX, n + 1))
-                  }
+                  onClick={() => {
+                    setRoomSize((n) => Math.min(ROOM_SIZE_MAX, n + 1));
+                    clearFormErrors();
+                  }}
                 >
                   +
                 </button>
               </div>
+              <FieldError id={roomSizeErrorId} message={sizeError} />
             </div>
 
             <div className="create-room-page__field">
@@ -164,18 +217,30 @@ export function CreateRoomPage() {
                 className="create-room-page__prompt"
               />
               <div
-                className="create-room-page__stepper"
+                className={[
+                  "create-room-page__stepper",
+                  hasOptionsPerGuestError
+                    ? "create-room-page__stepper--error"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 role="group"
                 aria-labelledby={optionsId}
+                aria-invalid={hasOptionsPerGuestError}
+                aria-describedby={
+                  hasOptionsPerGuestError ? optionsErrorId : undefined
+                }
               >
                 <button
                   type="button"
                   className="btn btn-secondary create-room-page__stepper-btn"
                   aria-label="decrease options per guest"
                   disabled={optionsPerGuest <= OPTIONS_MIN}
-                  onClick={() =>
-                    setOptionsPerGuest((n) => Math.max(OPTIONS_MIN, n - 1))
-                  }
+                  onClick={() => {
+                    setOptionsPerGuest((n) => Math.max(OPTIONS_MIN, n - 1));
+                    clearFormErrors();
+                  }}
                 >
                   −
                 </button>
@@ -190,13 +255,15 @@ export function CreateRoomPage() {
                   className="btn btn-secondary create-room-page__stepper-btn"
                   aria-label="increase options per guest"
                   disabled={optionsPerGuest >= OPTIONS_MAX}
-                  onClick={() =>
-                    setOptionsPerGuest((n) => Math.min(OPTIONS_MAX, n + 1))
-                  }
+                  onClick={() => {
+                    setOptionsPerGuest((n) => Math.min(OPTIONS_MAX, n + 1));
+                    clearFormErrors();
+                  }}
                 >
                   +
                 </button>
               </div>
+              <FieldError id={optionsErrorId} message={optionsPerGuestError} />
             </div>
 
             <button type="submit" className="btn create-room-page__submit">
