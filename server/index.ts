@@ -5,9 +5,12 @@ import { PATH_PREFIX, roomsRouter } from "./routes/rooms.ts";
 import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
 import { isAllowedOrigin } from "./constants/allowedOrigins.ts";
+import helmet from "helmet";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
+
+app.use(helmet());
 
 app.use(
   cors({
