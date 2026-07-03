@@ -7,7 +7,7 @@ export const handleBadResponse = (apiResponse: Response) => {
       throw new Error("room is full.");
     }
     if (apiResponse.status === 410) {
-      throw new Error("room expired.");
+      throw new Error("room expired");
     }
 
     throw new Error("something went wrong.");

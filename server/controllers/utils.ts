@@ -12,7 +12,7 @@ export const loadActiveRoom = async (
     return null;
   }
   if (isRoomExpired(room)) {
-    res.status(410).json({ error: "room expired." });
+    res.status(410).json({ error: "room expired" });
     return null;
   }
   return room;

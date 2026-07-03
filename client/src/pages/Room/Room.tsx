@@ -6,6 +6,7 @@ import {
   fetchRoomSubmissions,
   submitRoomOptions,
 } from "src/api/roomExperienceApi";
+import { FlippingText } from "src/components/FlippingLetterPool/FlippingText";
 import { LoadingScreen } from "src/components/LoadingScreen/LoadingScreen";
 import { RoomExperience } from "src/components/RoomExperience/RoomExperience";
 import { NameEntryForm } from "src/components/NameEntryForm/NameEntryForm";
@@ -19,6 +20,7 @@ import {
   setStoredUserId,
 } from "src/utils";
 import type { PageStatus } from "./Room.types";
+import "./Room.css";
 
 const LOADING_MIN_MS = 2500;
 
@@ -356,7 +358,15 @@ export const Room = () => {
   }
 
   if (pageStatus === "error") {
-    return <h1>{error}</h1>;
+    return (
+      <main className="shell shell-landing room-error">
+        <FlippingText
+          as="h1"
+          text={error ?? "something went wrong."}
+          className="guide-prompt"
+        />
+      </main>
+    );
   }
 
   if (pageStatus === "nameEntry") {
