@@ -82,10 +82,9 @@ export function flattenOptionsFormError(
   }
 
   if (formErrors.length > 0 && options.every((message) => message == null)) {
-    options[0] = formErrors[0];
     return {
       formErrors: formErrors.slice(1),
-      fieldErrors: { options },
+      fieldErrors: { options: [formErrors[0], ...options.slice(1)] },
     };
   }
 
