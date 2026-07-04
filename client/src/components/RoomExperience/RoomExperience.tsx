@@ -86,7 +86,8 @@ export function RoomExperience({
     onThanksComplete,
   });
 
-  const showShareBubble = selection.showRoomUI && !allSubmitted;
+  const showShareBubble =
+    selection.showRoomUI && !allSubmitted && room.size > 1;
 
   const revealLines = useMemo(
     () => [room.topic, selection.randomOption?.value ?? ""] as const,
