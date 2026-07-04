@@ -11,6 +11,7 @@
   overflow: hidden;
   height: 1.35em;
   perspective: 240px;
+  transform-style: preserve-3d;
   display: block;
   flex: 1 1 100%;
   width: 100%;
@@ -34,6 +35,8 @@
 .cycling-placeholder-dial__line--in {
   overflow: visible;
   text-overflow: clip;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .cycling-placeholder-dial__line--out {
@@ -43,35 +46,75 @@
   animation: cycling-placeholder-dial-out 450ms cubic-bezier(0.4, 0, 0.2, 1)
     forwards;
   transform-origin: center bottom;
+  will-change: transform, opacity;
 }
 
 .cycling-placeholder-dial__line--in {
   animation: cycling-placeholder-dial-in 450ms cubic-bezier(0.4, 0, 0.2, 1)
     forwards;
   transform-origin: center top;
+  will-change: transform, opacity;
+}
+
+.cycling-placeholder-dial__line:not(.cycling-placeholder-dial__line--in):not(
+    .cycling-placeholder-dial__line--out
+  ) {
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes cycling-placeholder-dial-out {
   from {
-    transform: translateY(0) rotateX(0deg);
+    transform: translate3d(0, 0, 0) rotateX(0deg);
     opacity: 1;
   }
 
   to {
-    transform: translateY(-110%) rotateX(75deg);
+    transform: translate3d(0, -110%, 0) rotateX(75deg);
     opacity: 0;
   }
 }
 
 @keyframes cycling-placeholder-dial-in {
   from {
-    transform: translateY(110%) rotateX(-75deg);
+    transform: translate3d(0, 110%, 0) rotateX(-75deg);
     opacity: 0;
   }
 
   to {
-    transform: translateY(0) rotateX(0deg);
+    transform: translate3d(0, 0, 0) rotateX(0deg);
     opacity: 1;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .cycling-placeholder-dial__viewport {
+    perspective: none;
+    transform-style: flat;
+  }
+
+  @keyframes cycling-placeholder-dial-out {
+    from {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translate3d(0, -110%, 0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cycling-placeholder-dial-in {
+    from {
+      transform: translate3d(0, 110%, 0);
+      opacity: 0;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
   }
 }
 

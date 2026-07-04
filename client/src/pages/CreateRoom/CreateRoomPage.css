@@ -21,11 +21,22 @@
 .create-room-page__topic-input {
   position: relative;
   min-width: 0;
+  isolation: isolate;
+}
+
+.create-room-page__topic-input .field-input {
+  position: relative;
+  z-index: 1;
+}
+
+.create-room-page__topic-input .field-input--empty {
+  background: transparent;
 }
 
 .create-room-page__topic-placeholder {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: flex;
   align-items: center;
   width: 100%;

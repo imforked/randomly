@@ -154,6 +154,7 @@ export function CreateRoomPage() {
                   type="text"
                   className={[
                     "field-input",
+                    topic === "" && "field-input--empty",
                     hasTopicError ? "field-input--error" : "",
                   ]
                     .filter(Boolean)

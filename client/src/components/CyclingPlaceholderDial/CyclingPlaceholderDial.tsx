@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type AnimationEvent } from "react";
 import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
 import "./CyclingPlaceholderDial.css";
+
+const DIAL_ANIMATION_MS = 450;
 
 type CyclingPlaceholderDialProps = {
   options: readonly string[];
@@ -49,7 +51,43 @@ export function CyclingPlaceholderDial({
     setIsAnimating(false);
   }, [active]);
 
-  const handleAnimationEnd = () => {
+  useEffect(() => {
+    if (!isAnimating) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsAnimating(false);
+      setPreviousIndex(null);
+    }, DIAL_ANIMATION_MS + 100);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [currentIndex, isAnimating]);
+
+  useEffect(() => {
+    const resetAnimationState = () => {
+      setIsAnimating(false);
+      setPreviousIndex(null);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        resetAnimationState();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  const handleAnimationEnd = (event: AnimationEvent<HTMLSpanElement>) => {
+    if (event.animationName !== "cycling-placeholder-dial-in") {
+      return;
+    }
+
     setIsAnimating(false);
     setPreviousIndex(null);
   };
