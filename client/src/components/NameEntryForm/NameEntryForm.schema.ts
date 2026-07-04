@@ -6,10 +6,10 @@ export const NameEntryFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Name must have at least 1 character.")
+    .min(1, "enter your name.")
     .max(
       NAME_MAX_CHARACTER_LIMIT,
-      `Name can have a max of ${NAME_MAX_CHARACTER_LIMIT} characters.`
+      `keep it under ${NAME_MAX_CHARACTER_LIMIT} characters.`
     ),
 });
 

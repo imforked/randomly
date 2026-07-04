@@ -8,7 +8,7 @@ export function createOptionsFormSchema(optionsPerGuest: number) {
       .array(z.string())
       .max(
         optionsPerGuest,
-        `You can submit a max of ${optionsPerGuest} option${
+        `you can only add ${optionsPerGuest} option${
           optionsPerGuest > 1 ? "s" : ""
         }.`
       )
@@ -21,7 +21,7 @@ export function createOptionsFormSchema(optionsPerGuest: number) {
         if (filledIndexes.length === 0) {
           ctx.addIssue({
             code: "custom",
-            message: "Add at least 1 option.",
+            message: "add at least one option.",
             path: [0],
           });
           return;
@@ -33,7 +33,7 @@ export function createOptionsFormSchema(optionsPerGuest: number) {
           if (value.length > OPTION_MAX_CHARACTER_LIMIT) {
             ctx.addIssue({
               code: "custom",
-              message: `Option can have a max of ${OPTION_MAX_CHARACTER_LIMIT} characters.`,
+              message: `keep it under ${OPTION_MAX_CHARACTER_LIMIT} characters.`,
               path: [index],
             });
           }
