@@ -6,6 +6,7 @@ import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
 import { isAllowedOrigin } from "./constants/allowedOrigins.ts";
 import helmet from "helmet";
+import { deleteAllExpiredRooms } from "./services/rooms.service.ts";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -38,3 +39,9 @@ attachSocketServer(server);
 server.listen(PORT, () => {
   console.log(`The server has started on port ${PORT} 🤠`);
 });
+
+setInterval(() => {
+  void deleteAllExpiredRooms().catch(console.error);
+}, 5 * 60 * 1000); // 5 minutes
+
+void deleteAllExpiredRooms().catch(console.error);

@@ -1,5 +1,9 @@
 import { tryJoin, getOccupancy } from "../../services/presence.service.ts";
-import { fetchRoomById, isRoomExpired } from "../../services/rooms.service.ts";
+import {
+  deleteExpiredRoom,
+  fetchRoomById,
+  isRoomExpired,
+} from "../../services/rooms.service.ts";
 import {
   ClientPayload,
   REALTIME_ERROR_CODES,
@@ -62,6 +66,8 @@ export const handleJoin = async ({
   const capacity = room.size;
 
   if (isRoomExpired(room)) {
+    await deleteExpiredRoom(room);
+
     sendError({
       socket,
       errorType: REALTIME_ERROR_CODES.ROOM_EXPIRED,

@@ -1,5 +1,9 @@
 import { RoomConfig } from "../generated/prisma/client.ts";
-import { fetchRoomById, isRoomExpired } from "../services/rooms.service.ts";
+import {
+  fetchRoomById,
+  isRoomExpired,
+  deleteExpiredRoom,
+} from "../services/rooms.service.ts";
 import { Response } from "express";
 
 export const loadActiveRoom = async (
@@ -12,6 +16,8 @@ export const loadActiveRoom = async (
     return null;
   }
   if (isRoomExpired(room)) {
+    await deleteExpiredRoom(room);
+
     res.status(410).json({ error: "room expired" });
     return null;
   }

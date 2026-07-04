@@ -16,9 +16,36 @@ export const fetchRoomById = async (roomId: RoomId) => {
 };
 
 export const deleteRoomConfig = async (roomId: RoomId) => {
-  return await prisma.roomConfig.delete({ where: roomId });
+  return await prisma.$transaction(async (tx) => {
+    await tx.roomConfig.update({
+      where: roomId,
+      data: { selectedOptionId: null },
+    });
+    return await tx.roomConfig.delete({ where: roomId });
+  });
 };
 
 export const isRoomExpired = (room: RoomConfig): boolean => {
   return Number(room.expiresAt) < Date.now();
+};
+
+export const deleteExpiredRoom = async (room: RoomConfig) => {
+  if (!isRoomExpired(room)) {
+    return;
+  }
+
+  await deleteRoomConfig({ id: room.id });
+
+  return true;
+};
+
+export const deleteAllExpiredRooms = async () => {
+  const expired = await prisma.roomConfig.findMany({
+    where: { expiresAt: { lt: new Date() } },
+    select: { id: true },
+  });
+
+  for (const room of expired) {
+    await deleteRoomConfig({ id: room.id });
+  }
 };
