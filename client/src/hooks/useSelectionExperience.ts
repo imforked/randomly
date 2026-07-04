@@ -12,9 +12,15 @@ export const SELECTION_THANKS_MESSAGES = [
   "all sales final. no refunds.",
 ] as const;
 
-export const pickSelectionThanksMessage = () => {
-  const index = Math.floor(Math.random() * SELECTION_THANKS_MESSAGES.length);
-  return SELECTION_THANKS_MESSAGES[index]!;
+export const pickSelectionThanksMessage = (seed: string) => {
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+
+  const messageIndex = hash % SELECTION_THANKS_MESSAGES.length;
+  return SELECTION_THANKS_MESSAGES[messageIndex]!;
 };
 
 export const SELECTION_TIMING = {

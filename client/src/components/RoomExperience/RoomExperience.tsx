@@ -93,10 +93,13 @@ export function RoomExperience({
     [room.topic, selection.randomOption?.value]
   );
 
-  const thanksMessage = useMemo(
-    () => pickSelectionThanksMessage(),
-    [selectionEpoch]
-  );
+  const thanksMessage = useMemo(() => {
+    if (!selectedOption) {
+      return "";
+    }
+
+    return pickSelectionThanksMessage(selectedOption.id);
+  }, [selectedOption]);
 
   const thanksLines = useMemo(() => [thanksMessage] as const, [thanksMessage]);
 
