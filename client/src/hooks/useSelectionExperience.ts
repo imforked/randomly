@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { RandomOption } from "src/api.types";
 
 export const SELECTION_THANKS_MESSAGES_SOLO = [
-  "glad we could settle that for you.",
   "you're welcome for deciding.",
-  "that's final. no takesies-backsies.",
-
+  "it's final. no takesies-backsies.",
   "case closed.",
   "problem solved. next.",
-  "the judge has ruled.",
-  "all sales final. no refunds.",
+  "the lore demands it.",
+  "the prophecy foretold this.",
+  "fate has chosen.",
+  "the council has decided.",
+  "destiny has spoken.",
+  "court is adjourned.",
+  "you're on the good timeline.",
 ] as const;
 
 export const SELECTION_THANKS_MESSAGES_MULTI_ONLY = [
