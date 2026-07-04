@@ -1,8 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RandomOption } from "src/api.types";
 
-export const SELECTION_THANKS_TEXT =
-  "thanks for using. give me a follow @100.11101";
+export const SELECTION_THANKS_MESSAGES = [
+  "glad we could settle that for you.",
+  "you're welcome for deciding.",
+  "that's final. no takesies-backsies.",
+  "hope everyone can live with that.",
+  "case closed.",
+  "problem solved. next.",
+  "the judge has ruled.",
+  "all sales final. no refunds.",
+] as const;
+
+export const pickSelectionThanksMessage = () => {
+  const index = Math.floor(Math.random() * SELECTION_THANKS_MESSAGES.length);
+  return SELECTION_THANKS_MESSAGES[index]!;
+};
 
 export const SELECTION_TIMING = {
   fadeMs: 500,

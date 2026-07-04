@@ -18,6 +18,23 @@
   min-width: 0;
 }
 
+.create-room-page__topic-input {
+  position: relative;
+  min-width: 0;
+}
+
+.create-room-page__topic-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
 .create-room-page__prompt {
   margin: 0;
   font-size: var(--text-lead);

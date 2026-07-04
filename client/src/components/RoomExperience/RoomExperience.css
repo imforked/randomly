@@ -181,7 +181,7 @@
 
 .selection-experience__option {
   margin: 0;
-  font-size: var(--guide-prompt-size);
+  font-size: 36px;
   font-weight: 600;
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-display);

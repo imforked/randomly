@@ -8,7 +8,7 @@ import { StartRoomModal } from "src/components/StartRoomModal/StartRoomModal";
 import {
   FADE_MS,
   OPTION_FADE_MS,
-  SELECTION_THANKS_TEXT,
+  pickSelectionThanksMessage,
   useSelectionExperience,
 } from "src/hooks/useSelectionExperience";
 import { usePrefersReducedMotion } from "src/hooks/usePrefersReducedMotion";
@@ -16,7 +16,6 @@ import type { RandomOption, RoomConfig, RoomSubmission, RoomUser } from "src/api
 import { isRoomReadyForSelection } from "src/utils";
 import "./RoomExperience.css";
 
-const THANKS_LINES = [SELECTION_THANKS_TEXT] as const;
 const THANKS_STATIC_CHARS = [["."]] as const;
 
 function joinClasses(...parts: (string | false | null | undefined)[]) {
@@ -93,6 +92,13 @@ export function RoomExperience({
     () => [room.topic, selection.randomOption?.value ?? ""] as const,
     [room.topic, selection.randomOption?.value]
   );
+
+  const thanksMessage = useMemo(
+    () => pickSelectionThanksMessage(),
+    [selectionEpoch]
+  );
+
+  const thanksLines = useMemo(() => [thanksMessage] as const, [thanksMessage]);
 
   useEffect(() => {
     if (allSubmitted || selectionEpoch > 0) {
@@ -268,13 +274,13 @@ export function RoomExperience({
           )}
         >
           <FlippingLetterPoolProvider
-            lines={THANKS_LINES}
+            lines={thanksLines}
             staticCharsByLine={THANKS_STATIC_CHARS}
           >
             <PooledFlippingTitle
               lineIndex={0}
               as="p"
-              text={SELECTION_THANKS_TEXT}
+              text={thanksMessage}
               className="selection-experience__thanks-text"
             />
           </FlippingLetterPoolProvider>

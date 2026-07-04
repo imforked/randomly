@@ -5,6 +5,7 @@ import {
   PooledFlippingTitle,
 } from "src/components/FlippingLetterPool/FlippingLetterPool";
 import { FieldError } from "src/components/FieldError/FieldError";
+import { CyclingPlaceholderDial } from "src/components/CyclingPlaceholderDial/CyclingPlaceholderDial";
 import { StartRoomModal } from "src/components/StartRoomModal/StartRoomModal";
 import {
   OPTIONS_PER_GUEST_MAX as OPTIONS_MAX,
@@ -30,6 +31,23 @@ const CREATE_ROOM_FLIP_LINES = [
   "how big is your room?",
   "how many options per guest?",
 ] as const;
+
+const TOPIC_PLACEHOLDER_QUESTIONS = [
+  "where are we hiking?",
+  "who's on aux?",
+  "where's brunch?",
+  "what are we reading?",
+  "what's the vibe tonight?",
+  "where's the pregame?",
+  "what's the move?",
+  "what are we watching?",
+  "where's happy hour?",
+  "who's washing dishes?",
+  "who's sleeping on the air mattress?",
+  "who's driving?",
+] as const;
+
+const TOPIC_PLACEHOLDER_INTERVAL_MS = 2500;
 
 export type RoomDraft = {
   topic: string;
@@ -131,26 +149,33 @@ export function CreateRoomPage() {
                 text={CREATE_ROOM_FLIP_LINES[0]}
                 className="create-room-page__prompt"
               />
-              <input
-                type="text"
-                className={[
-                  "field-input",
-                  hasTopicError ? "field-input--error" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                value={topic}
-                onChange={(e) => {
-                  setTopic(e.target.value);
-                  clearFormErrors();
-                }}
-                autoComplete="off"
-                placeholder="where are we hiking?"
-                aria-labelledby={decidingId}
-                aria-invalid={hasTopicError}
-                aria-describedby={hasTopicError ? topicErrorId : undefined}
-                maxLength={MAX_CHARACTER_LIMIT}
-              />
+              <div className="create-room-page__topic-input">
+                <input
+                  type="text"
+                  className={[
+                    "field-input",
+                    hasTopicError ? "field-input--error" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  value={topic}
+                  onChange={(e) => {
+                    setTopic(e.target.value);
+                    clearFormErrors();
+                  }}
+                  autoComplete="off"
+                  aria-labelledby={decidingId}
+                  aria-invalid={hasTopicError}
+                  aria-describedby={hasTopicError ? topicErrorId : undefined}
+                  maxLength={MAX_CHARACTER_LIMIT}
+                />
+                <CyclingPlaceholderDial
+                  options={TOPIC_PLACEHOLDER_QUESTIONS}
+                  intervalMs={TOPIC_PLACEHOLDER_INTERVAL_MS}
+                  active={topic === ""}
+                  className="create-room-page__topic-placeholder"
+                />
+              </div>
               <FieldError id={topicErrorId} message={topicError} />
             </div>
 
