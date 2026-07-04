@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { errorHandler } from "./middleware/index.ts";
+import { errorHandler, globalRateLimiter } from "./middleware/index.ts";
 import { PATH_PREFIX, roomsRouter } from "./routes/rooms.ts";
 import { createServer } from "node:http";
 import { attachSocketServer } from "./realtime/socketServer.ts";
@@ -9,6 +9,7 @@ import helmet from "helmet";
 import { deleteAllExpiredRooms } from "./services/rooms.service.ts";
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(helmet());
@@ -27,6 +28,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(globalRateLimiter);
 
 app.use(PATH_PREFIX, roomsRouter);
 
