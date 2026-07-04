@@ -99,8 +99,8 @@ export function RoomExperience({
       return "";
     }
 
-    return pickSelectionThanksMessage(selectedOption.id);
-  }, [selectedOption]);
+    return pickSelectionThanksMessage(selectedOption.id, room.size > 1);
+  }, [selectedOption, room.size]);
 
   const thanksLines = useMemo(() => [thanksMessage] as const, [thanksMessage]);
 

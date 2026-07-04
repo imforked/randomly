@@ -1,26 +1,42 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RandomOption } from "src/api.types";
 
-export const SELECTION_THANKS_MESSAGES = [
+export const SELECTION_THANKS_MESSAGES_SOLO = [
   "glad we could settle that for you.",
   "you're welcome for deciding.",
   "that's final. no takesies-backsies.",
-  "hope everyone can live with that.",
+
   "case closed.",
   "problem solved. next.",
   "the judge has ruled.",
   "all sales final. no refunds.",
 ] as const;
 
-export const pickSelectionThanksMessage = (seed: string) => {
+export const SELECTION_THANKS_MESSAGES_MULTI_ONLY = [
+  "hope everyone can live with that.",
+] as const;
+
+export const SELECTION_THANKS_MESSAGES = [
+  ...SELECTION_THANKS_MESSAGES_SOLO,
+  ...SELECTION_THANKS_MESSAGES_MULTI_ONLY,
+] as const;
+
+export const getSelectionThanksMessages = (multiUser: boolean) =>
+  multiUser ? SELECTION_THANKS_MESSAGES : SELECTION_THANKS_MESSAGES_SOLO;
+
+export const pickSelectionThanksMessage = (
+  seed: string,
+  multiUser: boolean
+) => {
+  const messages = getSelectionThanksMessages(multiUser);
   let hash = 0;
 
   for (let index = 0; index < seed.length; index += 1) {
     hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
   }
 
-  const messageIndex = hash % SELECTION_THANKS_MESSAGES.length;
-  return SELECTION_THANKS_MESSAGES[messageIndex]!;
+  const messageIndex = hash % messages.length;
+  return messages[messageIndex]!;
 };
 
 export const SELECTION_TIMING = {
@@ -135,8 +151,7 @@ export function useSelectionExperience({
     const option = selectedOption;
     let cancelled = false;
 
-    const shouldAbort = () =>
-      cancelled || epochRef.current !== selectionEpoch;
+    const shouldAbort = () => cancelled || epochRef.current !== selectionEpoch;
 
     const pause = async (ms: number) => {
       await wait(ms);
