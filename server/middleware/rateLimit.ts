@@ -15,3 +15,19 @@ export const createRoomRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const createUserRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: { error: "too many join attempts." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const createOptionsRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: { error: "too many option submissions." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
