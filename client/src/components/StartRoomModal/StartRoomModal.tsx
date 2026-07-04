@@ -25,10 +25,7 @@ const QRCode = (
 type StartRoomModalProps = {
   open: boolean;
   onClose: () => void;
-  roomUrl:
-    | null
-    | `${string}/${string}`
-    | `https://www.randomlyapp.com/${string}`;
+  roomUrl: string | null;
   showGoToRoomButton?: boolean;
 };
 
