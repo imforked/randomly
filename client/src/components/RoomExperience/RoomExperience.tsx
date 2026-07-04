@@ -4,6 +4,7 @@ import {
   PooledFlippingTitle,
 } from "src/components/FlippingLetterPool/FlippingLetterPool";
 import { OptionsModal } from "src/components/OptionsModal/OptionsModal";
+import { StartRoomModal } from "src/components/StartRoomModal/StartRoomModal";
 import {
   FADE_MS,
   OPTION_FADE_MS,
@@ -66,7 +67,13 @@ export function RoomExperience({
 }: RoomExperienceProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [sharePulseDismissed, setSharePulseDismissed] = useState(false);
   const topicLines = useMemo(() => [room.topic] as const, [room.topic]);
+  const roomUrl = useMemo(
+    () => `${window.location.origin}/rooms/${room.id}`,
+    [room.id]
+  );
 
   const allSubmitted = useMemo(
     () => isRoomReadyForSelection({ submissions, roomSize: room.size }),
@@ -80,6 +87,8 @@ export function RoomExperience({
     onThanksComplete,
   });
 
+  const showShareBubble = selection.showRoomUI && !allSubmitted;
+
   const revealLines = useMemo(
     () => [room.topic, selection.randomOption?.value ?? ""] as const,
     [room.topic, selection.randomOption?.value]
@@ -88,6 +97,7 @@ export function RoomExperience({
   useEffect(() => {
     if (allSubmitted || selectionEpoch > 0) {
       setOptionsModalOpen(false);
+      setShareModalOpen(false);
     }
   }, [allSubmitted, selectionEpoch]);
 
@@ -279,6 +289,55 @@ export function RoomExperience({
         isSubmitting={isSubmittingOptions}
         errorMessage={optionsErrorMessage}
         onErrorDismiss={onOptionsErrorDismiss}
+      />
+
+      {showShareBubble ? (
+        <button
+          type="button"
+          className={joinClasses(
+            "room-experience__share-bubble",
+            "btn",
+            "btn-secondary",
+            sharePulseDismissed && "room-experience__share-bubble--pulse-dismissed"
+          )}
+          aria-label="share room"
+          onClick={() => {
+            setSharePulseDismissed(true);
+            setShareModalOpen(true);
+          }}
+        >
+          <svg
+            className="room-experience__share-bubble-icon"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            aria-hidden={true}
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            />
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            />
+          </svg>
+        </button>
+      ) : null}
+
+      <StartRoomModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        roomUrl={roomUrl}
+        showGoToRoomButton={false}
       />
     </main>
   );

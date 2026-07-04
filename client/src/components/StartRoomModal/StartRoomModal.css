@@ -114,3 +114,8 @@
   outline-offset: -2px;
   z-index: 1;
 }
+
+.modal-action-group--single .modal-copy-btn {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none;
+}

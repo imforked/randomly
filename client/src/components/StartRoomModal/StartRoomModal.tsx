@@ -29,12 +29,14 @@ type StartRoomModalProps = {
     | null
     | `${string}/${string}`
     | `https://www.randomlyapp.com/${string}`;
+  showGoToRoomButton?: boolean;
 };
 
 export function StartRoomModal({
   open,
   onClose,
   roomUrl,
+  showGoToRoomButton = true,
 }: StartRoomModalProps) {
   const titleId = useId();
   const [copied, setCopied] = useState(false);
@@ -127,7 +129,14 @@ export function StartRoomModal({
               level="M"
             />
           </div>
-          <div className="modal-action-group">
+          <div
+            className={[
+              "modal-action-group",
+              !showGoToRoomButton && "modal-action-group--single",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             <button
               type="button"
               className="btn btn-secondary modal-copy-btn"
@@ -135,12 +144,14 @@ export function StartRoomModal({
             >
               {copied ? "copied" : "copy link"}
             </button>
-            <a
-              href={roomUrl ?? ""}
-              className="btn btn-secondary modal-go-room-btn"
-            >
-              go to room
-            </a>
+            {showGoToRoomButton ? (
+              <a
+                href={roomUrl ?? ""}
+                className="btn btn-secondary modal-go-room-btn"
+              >
+                go to room
+              </a>
+            ) : null}
           </div>
         </FlippingLetterPoolProvider>
       </div>
